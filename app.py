@@ -1,17 +1,130 @@
 # app.py
 import streamlit as st
-import random, json, os, uuid, time
+import pandas as pd
+import random
 from datetime import datetime
+import plotly.graph_objects as go
+from streamlit_extras.let_it_rain import rain  # For confetti effect
 
-# ---------------------------
-# Page config
-# ---------------------------
-st.set_page_config(page_title="Interview Preparation Platform", layout="wide", initial_sidebar_state="expanded")
+# -------------------------------
+# Page Configuration
+# -------------------------------
+st.set_page_config(
+    page_title="Interview Preparation Platform",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# ---------------------------
-# Question bank (use your full bank here)
-# ---------------------------
-DEFAULT_BANK = {
+# -------------------------------
+# CSS for Futuristic UI
+# -------------------------------
+st.markdown("""
+<style>
+/* Glass Panels & Background */
+.stApp {
+    background: linear-gradient(135deg, #d9e2ec, #f0f4f8);
+}
+[data-testid="stSidebar"] {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 25px;
+}
+
+/* Main content glass */
+.css-18e3th9 {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 25px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+/* Button Hover Effects */
+.stButton>button {
+    background-color: #0055a5;
+    color: white;
+    border-radius: 12px;
+    padding: 0.5em 1.5em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+.stButton>button:hover {
+    background-color: #003366;
+    transform: scale(1.05);
+}
+
+/* Radio Hover */
+.stRadio>div>label:hover {
+    color: #0055a5;
+    font-weight: 600;
+}
+
+/* Question Card */
+.question-card {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(0, 85, 165, 0.08);
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+.question-card:hover {
+    background: rgba(0, 85, 165, 0.15);
+}
+
+/* Selected answer highlight */
+.selected-answer {
+    background-color: rgba(0,85,165,0.2);
+    border-radius: 10px;
+}
+
+/* Badge glow animation */
+.badge {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    animation: glow 1.5s infinite alternate;
+    margin: 10px 0;
+}
+.gold { background: #FFD700; }
+.silver { background: #C0C0C0; }
+.bronze { background: #CD7F32; }
+
+@keyframes glow {
+    from { box-shadow: 0 0 5px #fff; }
+    to { box-shadow: 0 0 20px #0055a5; }
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -------------------------------
+# Initialize Session State
+# -------------------------------
+if "section" not in st.session_state:
+    st.session_state.section = "Practice"
+if "results" not in st.session_state:
+    st.session_state.results = []
+if "in_test" not in st.session_state:
+    st.session_state.in_test = False
+if "current_question" not in st.session_state:
+    st.session_state.current_question = 0
+if "selected_answers" not in st.session_state:
+    st.session_state.selected_answers = []
+if "score" not in st.session_state:
+    st.session_state.score = 0
+
+# -------------------------------
+# Placeholder Question Bank
+# -------------------------------
+question_bank = {  # Add your questions here
     "Practice": {  # Aptitude Questions
         "Easy": [
             {"q": "If 5x + 3 = 18, what is x?", "a": "3", "options": ["2","3","4","5"]},
@@ -171,7 +284,7 @@ DEFAULT_BANK = {
             {"q": "Python dataclass usage?", "a": "Simplify class creation", "options":["Loop","Simplify class creation","Function","Module"]}
         ]
     },
-    "Pseudocode": {  # Pseudocode questions
+        "Pseudocode": {  # Pseudocode questions
         "Easy": [
             {"q": "Write pseudocode to find max of two numbers", "a": "If a>b then max=a else max=b", "options":["max=a+b","If a>b then max=a else max=b","max=a*b","None"]},
             {"q": "Print numbers 1 to 10", "a": "For i=1 to 10 print i", "options":["For i=1 to 10 print i","Print 1 to 10","Loop i print i","None"]},
@@ -225,306 +338,186 @@ DEFAULT_BANK = {
         ]
      }   
 }
+# -------------------------------
+# Sidebar Navigation & Instructions
+# -------------------------------
+st.sidebar.title("📘 Navigation")
+section = st.sidebar.radio(
+    "Choose Section",
+    ["Practice", "Mock Interview", "MCQ Quiz", "Pseudocode", "Results", "Analytics", "History"],
+    index=["Practice", "Mock Interview", "MCQ Quiz", "Pseudocode", "Results", "Analytics", "History"].index(st.session_state.section)
+)
+st.session_state.section = section
 
-# ---------------------------
-# Files & history helpers
-# ---------------------------
-HISTORY_FILE = "history.json"
+st.sidebar.markdown("---")
+st.sidebar.title("🧭 Instructions")
+st.sidebar.info("""
+**Guidelines:**
+- Select a section to begin practice.  
+- Do **not refresh** during a test.  
+- Navigate smoothly using sidebar options.  
+- Results and analytics saved automatically.  
+- Enjoy a futuristic interactive experience.
+""")
 
-def load_history():
-    try:
-        if os.path.exists(HISTORY_FILE):
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-    except Exception:
-        pass
-    return []
-
-def save_history(history):
-    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(history, f, indent=2, default=str)
-
-def append_history(record):
-    h = load_history()
-    h.append(record)
-    save_history(h)
-
-# ---------------------------
-# Utility helpers
-# ---------------------------
-def normalize_text(x):
-    if x is None:
-        return ""
-    return str(x).strip().casefold()
-
-def is_correct(user_ans, correct_ans):
-    return normalize_text(user_ans) == normalize_text(correct_ans)
-
-# ---------------------------
-# Load external question_bank.json if present
-# ---------------------------
-QUESTION_BANK = DEFAULT_BANK
-if os.path.exists("question_bank.json"):
-    try:
-        with open("question_bank.json", "r", encoding="utf-8") as f:
-            QUESTION_BANK = json.load(f)
-    except Exception:
-        QUESTION_BANK = DEFAULT_BANK
-
-# ---------------------------
-# UI CSS
-# ---------------------------
+# -------------------------------
+# Header
+# -------------------------------
 st.markdown("""
-<style>
-/* big friendly buttons */
-.stButton>button {
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 16px;
-  background: linear-gradient(90deg,#4b6cb7,#182848);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-/* card for question */
-.q-card {
-  background: #f7fbff;
-  border-radius: 10px;
-  padding: 18px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-}
-/* smaller radio spacing */
-.stRadio > div { padding: 6px 0; }
-</style>
+<h1 style='text-align:center; color:#003366; font-weight:800;'>
+    Interview Preparation Platform
+</h1>
+<hr style='border: 2px solid #003366; width: 60%; margin:auto; border-radius:5px;'>
 """, unsafe_allow_html=True)
+st.write("### Practice, Mock Interviews, MCQ Quizzes and Pseudocode — modern interactive UI with futuristic features.")
 
-# ---------------------------
-# Top header
-# ---------------------------
-st.markdown("<h1 style='text-align:center;color:#0b4f6c'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
-st.write("Practice, Mock Interviews, MCQ Quizzes and Pseudocode exercises — fast and clean UI.")
+# -------------------------------
+# Section: Practice
+# -------------------------------
+if section == "Practice":
+    st.subheader("🧩 Practice")
+    difficulty = st.selectbox("Select Difficulty", ["Easy", "Medium", "Hard"])
+    num_q = st.slider("Number of Questions", 1, 20, 10)
+    start = st.button("🚀 Start Test")
 
-# ---------------------------
-# Tabs (sections)
-# ---------------------------
-tabs = st.tabs(["🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💡 Pseudocode", "📈 Results", "📊 Analytics", "🕓 History"])
-tab_names = ["Practice", "Mock Interview", "MCQ Quiz", "Pseudocode", "Results", "Analytics", "History"]
+    if start:
+        if difficulty not in question_bank or len(question_bank[difficulty]) == 0:
+            st.warning("⚠️ No questions found. Add questions to `question_bank` first.")
+        else:
+            st.session_state.in_test = True
+            st.session_state.current_question = 0
+            st.session_state.selected_answers = []
+            st.session_state.score = 0
+            st.session_state.questions = random.sample(
+                question_bank[difficulty],
+                min(num_q, len(question_bank[difficulty]))
+            )
+            st.rerun()
 
-# Store small global states
-if "exam" not in st.session_state:
-    st.session_state.exam = None  # holds exam dict when running
-if "active_section" not in st.session_state:
-    st.session_state.active_section = None
+    if st.session_state.in_test:
+        q_idx = st.session_state.current_question
+        q_data = st.session_state.questions[q_idx]
 
-# ---------------------------
-# Function to start exam
-# ---------------------------
-def start_exam(section, difficulty, count, total_time_minutes=30):
-    qs_pool = QUESTION_BANK.get(section, {}).get(difficulty, []).copy()
-    if not qs_pool:
-        st.warning("No questions available for chosen section/difficulty.")
-        return
-    random.shuffle(qs_pool)
-    qs = qs_pool[:count] if len(qs_pool) >= count else (qs_pool * ((count // len(qs_pool)) + 1))[:count]
-    st.session_state.exam = {
-        "section": section,
-        "difficulty": difficulty,
-        "qs": qs,
-        "answers": ["" for _ in qs],
-        "idx": 0,
-        "start_time": time.time(),
-        "duration": int(total_time_minutes * 60)
-    }
-    st.session_state.active_section = section
-    st.rerun()
+        # Question Card
+        st.markdown(f"<div class='question-card'><b>Q{q_idx+1}:</b> {q_data['q']}</div>", unsafe_allow_html=True)
 
-# ---------------------------
-# Render tab content helper
-# ---------------------------
-def render_section_ui(section, tab_index):
-    with tabs[tab_index]:
-        st.header(f"{section}")
-        # difficulty dropdown dynamic
-        levels = list(QUESTION_BANK.get(section, {}).keys())
-        if not levels:
-            st.info("No levels found for this section.")
-            return
-        col1, col2, col3 = st.columns([2,2,1])
+        # Radio Options
+        choice = st.radio("Select your answer:", q_data["options"], key=f"q_{q_idx}")
+        if len(st.session_state.selected_answers) <= q_idx:
+            st.session_state.selected_answers.append(choice)
+        else:
+            st.session_state.selected_answers[q_idx] = choice
+
+        # Real-time score & progress
+        correct_so_far = sum(
+            1 for i, q in enumerate(st.session_state.questions[:q_idx+1])
+            if i < len(st.session_state.selected_answers) and q["a"] == st.session_state.selected_answers[i]
+        )
+        progress_percent = int(((q_idx+1) / len(st.session_state.questions)) * 100)
+        st.progress(progress_percent)
+        st.info(f"✅ Score so far: {correct_so_far}/{q_idx+1}")
+
+        # Columns for navigation
+        col1, col2 = st.columns(2)
         with col1:
-            level = st.selectbox("Difficulty", levels, key=f"{section}_level")
+            if st.button("⬅️ Previous", disabled=(q_idx == 0)):
+                st.session_state.current_question -= 1
+                st.rerun()
         with col2:
-            max_q = len(QUESTION_BANK.get(section, {}).get(level, []))
-            max_q = max(1, max_q)  # at least 1
-            count = st.slider("Number of Questions", 1, min(30, max_q), min(10, max_q), key=f"{section}_count")
-        with col3:
-            start_btn = st.button("▶ Start Test", key=f"{section}_start")
-        st.write("---")
-        st.write("Tips: Use the navigation buttons during the test. Do not refresh the page while an attempt is active.")
-        if start_btn:
-            start_exam(section, level, count, total_time_minutes=30)
+            if st.button("Next ➡️"):
+                st.session_state.current_question += 1
+                if st.session_state.current_question >= len(st.session_state.questions):
+                    # Calculate final score
+                    correct = sum(
+                        1 for i, q in enumerate(st.session_state.questions)
+                        if q["a"] == st.session_state.selected_answers[i]
+                    )
+                    st.session_state.score = correct
+                    st.session_state.results.append({
+                        "section": "Practice",
+                        "difficulty": difficulty,
+                        "score": correct,
+                        "total": len(st.session_state.questions),
+                        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                    st.session_state.in_test = False
 
-# ---------------------------
-# Render each main section tab
-# ---------------------------
-render_section_ui("Practice", 0)
-render_section_ui("Mock Interview", 1)
-render_section_ui("MCQ Quiz", 2)
-render_section_ui("Pseudocode", 3)
+                    # Confetti for high score
+                    score_percentage = correct/len(st.session_state.questions)
+                    if score_percentage >= 0.8:
+                        rain(emoji="🎉", font_size=40, falling_speed=5, animation_length=3)
 
-# ---------------------------
-# Results/Analytics/History tabs
-# ---------------------------
-with tabs[4]:  # Results
-    st.header("📈 Recent Results")
-    hist = load_history()
-    if not hist:
-        st.info("No results yet. Take a test to see results here.")
-    else:
-        # show last 10
-        for rec in hist[-10:][::-1]:
-            st.markdown(f"**{rec['section']}** — {rec['difficulty']} | Score: **{rec['score']}** | Time: {rec['timestamp']}")
-            if st.button(f"View details {rec['id']}", key=f"view_{rec['id']}"):
-                for d in rec.get("details", []):
-                    st.write(f"- Q: {d.get('q','-')} | Ans: {d.get('selected','-')} | Correct: {d.get('correct','-')} | Score: {d.get('score',0)}")
+                    # Badge System
+                    if score_percentage >= 0.8:
+                        st.markdown("<div class='badge gold'>🥇 Gold Badge</div>", unsafe_allow_html=True)
+                    elif score_percentage >= 0.5:
+                        st.markdown("<div class='badge silver'>🥈 Silver Badge</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown("<div class='badge bronze'>🥉 Bronze Badge</div>", unsafe_allow_html=True)
 
-with tabs[5]:  # Analytics
-    st.header("📊 Analytics")
-    hist = load_history()
-    if not hist:
-        st.info("No data to analyze yet.")
-    else:
-        # simple aggregates
-        from collections import defaultdict
-        agg = defaultdict(list)
-        for r in hist:
-            agg[r['section']].append(r['score'])
-        cols = st.columns(len(agg))
-        for c, (sec, scores) in zip(cols, agg.items()):
-            with c:
-                st.metric(label=sec, value=f"{sum(scores)/len(scores):.1f}" if scores else "0")
-        st.write("Detailed history in Results / History tabs.")
-
-with tabs[6]:  # History
-    st.header("🕓 Full History")
-    h = load_history()
-    if not h:
-        st.info("No attempts recorded.")
-    else:
-        for rec in h[::-1]:
-            st.markdown(f"**{rec['section']}** — {rec['difficulty']} | Score: **{rec['score']}** | {rec['timestamp']}")
-
-# ---------------------------
-# Exam rendering (always visible if exam active)
-# ---------------------------
-if st.session_state.exam:
-    ex = st.session_state.exam
-    # render exam card at top of page for visibility
-    st.markdown(f"<div style='padding:10px;border-radius:8px;background:#eef7ff'><b>Exam in progress:</b> {ex['section']} — {ex['difficulty']}</div>", unsafe_allow_html=True)
-
-    # timer display
-    elapsed = int(time.time() - ex["start_time"])
-    remaining = max(ex["duration"] - elapsed, 0)
-    m, s = divmod(remaining, 60)
-    st.markdown(f"⏱ Time left: **{m:02}:{s:02}**")
-    progress_val = min(1.0, (elapsed / ex["duration"]) if ex["duration"] > 0 else 0)
-    st.progress(progress_val)
-
-    # auto submit when time's up
-    if remaining == 0:
-        st.warning("Time's up — auto-submitting your answers.")
-        # compute results below (reuse submit logic)
-        # fallthrough to submit code
-
-    # question display
-    idx = ex["idx"]
-    q = ex["qs"][idx]
-    st.markdown(f"<div class='q-card'><b>Q{idx+1}. {q['q']}</b></div>", unsafe_allow_html=True)
-
-    # if options exist -> radio (MCQ), else text_area
-    user_key = f"answer_{idx}"
-    if "options" in q and q["options"]:
-        # show options in a radio; prefill from stored answer if present
-        choice = st.radio("Choose an option:", q["options"], index=(q["options"].index(ex["answers"][idx]) if ex["answers"][idx] in q["options"] else 0), key=user_key)
-        ex["answers"][idx] = choice
-    else:
-        # text answer
-        ans = st.text_area("Your answer:", value=ex["answers"][idx], key=user_key, height=140)
-        ex["answers"][idx] = ans
-
-    # navigation
-    c1, c2, c3, c4 = st.columns([1,1,1,1])
-    with c1:
-        if st.button("⬅ Previous"):
-            if idx > 0:
-                ex["idx"] -= 1
-                st.session_state.exam = ex
+                    # Animated Circular Score Gauge
+                    fig = go.Figure(go.Indicator(
+                        mode="gauge+number+delta",
+                        value=correct,
+                        domain={'x': [0, 1], 'y': [0, 1]},
+                        title={'text': "Test Score", 'font': {'size': 24}},
+                        delta={'reference': len(st.session_state.questions), 'increasing': {'color': "green"}},
+                        gauge={
+                            'axis': {'range': [0, len(st.session_state.questions)]},
+                            'bar': {'color': "rgba(0,85,165,0.8)"},
+                            'steps': [
+                                {'range': [0, len(st.session_state.questions)*0.5], 'color': "red"},
+                                {'range': [len(st.session_state.questions)*0.5, len(st.session_state.questions)*0.8], 'color': "yellow"},
+                                {'range': [len(st.session_state.questions)*0.8, len(st.session_state.questions)], 'color': "green"}
+                            ],
+                        }
+                    ))
+                    st.plotly_chart(fig, use_container_width=True)
+                    st.success(f"🎉 Test Completed! Your Score: {correct}/{len(st.session_state.questions)}")
                 st.rerun()
-    with c2:
-        if st.button("Next ➡"):
-            if idx < len(ex["qs"]) - 1:
-                ex["idx"] += 1
-                st.session_state.exam = ex
-                st.rerun()
-    with c3:
-        if st.button("💾 Save Answer"):
-            st.success("Answer saved ✅")
-    with c4:
-        if st.button("🏁 Submit Test"):
-            # submit immediately
-            pass  # fallthrough to submission block below
 
-    # If remaining ==0 or Submit button clicked, we should compute results.
-    # (We detect submit by checking if Submit button was pressed — above uses a fallthrough.)
-    # For deterministic behavior, we create a small 'should_submit' flag in session_state when submit pressed.
-    # But simpler: check if remaining ==0 OR if st.session_state.get('_submit_now') - avoid complexity:
-    # We'll check whether the "🏁 Submit Test" button was pressed by catching a form value: streamlit doesn't return button press state here after rerun.
-    # To keep it simple and reliable: create a submit button with a unique key and check st.experimental_get_query_params not used.
-    # Simpler approach: create another explicit submit control below which always triggers on click.
+# -------------------------------
+# Other Sections
+# -------------------------------
+elif section == "Mock Interview":
+    st.subheader("🎤 Mock Interview")
+    st.info("Simulate a real interview environment. (Coming Soon!)")
 
-    # Final explicit submit control:
-    if st.button("Confirm Submit Now", key="confirm_submit_now"):
-        should_submit = True
+elif section == "MCQ Quiz":
+    st.subheader("🧠 MCQ Quiz")
+    st.info("Timed quizzes to test your knowledge. (Coming Soon!)")
+
+elif section == "Pseudocode":
+    st.subheader("💡 Pseudocode Practice")
+    st.info("Improve your logic-building skills. (Coming Soon!)")
+
+elif section == "Results":
+    st.subheader("📊 Results")
+    if len(st.session_state.results) == 0:
+        st.info("No results yet. Complete a test to see your results.")
     else:
-        should_submit = (remaining == 0)
+        for rec in st.session_state.results:
+            section_name = rec.get("section", "Unknown")
+            diff = rec.get("difficulty", "N/A")
+            score = rec.get("score", 0)
+            total = rec.get("total", 0)
+            timestamp = rec.get("timestamp", "")
+            color = "green" if score/total >= 0.8 else "yellow" if score/total >=0.5 else "red"
+            st.markdown(f"<div style='padding:10px; border-radius:10px; background:{color};'>"
+                        f"**{section_name}** — {diff} | Score: **{score}/{total}** | ⏱️ {timestamp}</div>", unsafe_allow_html=True)
 
-    if should_submit:
-        # scoring
-        correct_count = 0
-        details = []
-        for i_q, qobj in enumerate(ex["qs"]):
-            user_ans = ex["answers"][i_q]
-            correct_ans = qobj.get("a", "")
-            correct = is_correct(user_ans, correct_ans)
-            details.append({
-                "q": qobj.get("q"),
-                "selected": user_ans,
-                "correct": correct_ans,
-                "score": 1 if correct else 0
-            })
-            if correct:
-                correct_count += 1
+elif section == "Analytics":
+    st.subheader("📈 Performance Analytics")
+    if len(st.session_state.results) == 0:
+        st.info("No data available for analytics.")
+    else:
+        df = pd.DataFrame(st.session_state.results)
+        st.dataframe(df.style.background_gradient(cmap='Blues'))
 
-        # prepare record
-        score = correct_count  # raw count; you can convert to percentage if desired
-        rec = {
-            "id": str(uuid.uuid4()),
-            "section": ex["section"],
-            "difficulty": ex["difficulty"],
-            "timestamp": datetime.utcnow().isoformat(),
-            "score": score,
-            "details": details
-        }
-        append_history(rec)
-        # clear exam
-        st.success(f"Submitted ✅ — Score: {score} / {len(ex['qs'])}")
-        if score == len(ex['qs']):
-            st.balloons()
-        # remove exam from session
-        st.session_state.exam = None
-        # rerun to refresh tabs and show Results
-        st.rerun()
-
-# ---------------------------
-# Footer
-# ---------------------------
-st.markdown("<div style='text-align:center;padding:8px;color:#0b4f6c;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+elif section == "History":
+    st.subheader("🕓 History")
+    if len(st.session_state.results) == 0:
+        st.info("No past history found.")
+    else:
+        df = pd.DataFrame(st.session_state.results)
+        st.table(df)
