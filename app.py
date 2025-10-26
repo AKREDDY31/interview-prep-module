@@ -10,11 +10,11 @@ import plotly.express as px
 st.set_page_config(page_title="Interview Preparation Platform", layout="wide", initial_sidebar_state="expanded")
 st.markdown("""
 <style>
-.big-title { text-align:center; color:#5612c6; font-weight:800; font-size:2.8rem; margin-top:24px; margin-bottom:8px; letter-spacing:0.03em;}
-.subtitle { text-align:center; color:#444B5A; font-size:1.2rem; margin-bottom:22px;}
-.cardy { background:linear-gradient(120deg,#f3f5fa 60%, #e4e6fb 100%); border-left:6px solid #5b21b6; border-radius:16px; box-shadow:0 2px 18px #2222; padding:28px 18px 18px 26px; margin-bottom:26px;}
-.cardy-title { font-size:1.23rem; font-weight:800; color:#7c3aed; margin-bottom:16px;}
-.cardy-li { font-size:1.06rem; color:#333; margin-bottom:7px !important; line-height:1.57em !important;}
+.big-title{ text-align:center; color:#5612c6; font-weight:800; font-size:2.8rem; margin-top:24px; margin-bottom:8px; letter-spacing:0.03em;}
+.subtitle{ text-align:center; color:#444B5A; font-size:1.2rem; margin-bottom:22px;}
+.cardy{ background:linear-gradient(120deg,#f3f5fa 60%, #e4e6fb 100%); border-left:6px solid #5b21b6; border-radius:16px; box-shadow:0 2px 18px #2222; padding:28px 18px 18px 26px; margin-bottom:26px;}
+.cardy-title{ font-size:1.23rem; font-weight:800; color:#7c3aed; margin-bottom:16px;}
+.cardy-li{ font-size:1.06rem; color:#333; margin-bottom:7px !important; line-height:1.57em !important;}
 @media (max-width:800px){.big-title{font-size:2rem;}.subtitle{font-size:1.01rem;}.cardy{padding:18px 10px 12px 12px;}}
 </style>
 """, unsafe_allow_html=True)
@@ -1229,7 +1229,8 @@ QUESTION_BANK ={
     ]
 }
 }
-  # <-- Fill this dict with your questions
+
+ # <-- Paste your full question bank here
 TOPICS = {k: list(v.keys()) for k, v in QUESTION_BANK.items() if isinstance(v, dict)}
 
 def tfidf_similarity(a, b):
@@ -1300,9 +1301,10 @@ if "mode" not in st.session_state:
 if st.session_state.mode == "main":
     st.markdown("<div class='big-title'>Interview Preparation Platform</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>Interactive Interview Practice and Analytics Portal</div>", unsafe_allow_html=True)
-    section_tabs = st.tabs(["🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💻 Code Runner", "📄 Pseudocode",
-        "📈 Results", "📊 Analytics", "🕓 History"])
-
+    section_tabs = st.tabs([
+        "🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💻 Code Runner", "📄 Pseudocode",
+        "📈 Results", "📊 Analytics", "🕓 History"
+    ])
     with section_tabs[0]:
         if "Practice" in TOPICS and TOPICS["Practice"]:
             topic = st.selectbox("Select Topic", TOPICS["Practice"], key="practice_topic")
