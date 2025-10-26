@@ -28,10 +28,12 @@ st.markdown("""
 .question-card { padding:18px; border-radius:18px; background: rgba(0,85,165,0.08); margin-bottom:15px; transition:all 0.3s ease;}
 .question-card:hover { background: rgba(0,85,165,0.15);}
 .selected-answer { background-color: rgba(0,85,165,0.2); border-radius:10px;}
-.header-title { text-align:center; font-size:2.2em; font-weight:bold; margin-bottom:20px; color:#003366;}
+.header-title { text-align:center; font-size:2.2em; font-weight:bold; margin-bottom:0; color:#003366;}
+.header-tagline { text-align:center; font-size:1.2em; font-weight:normal; color:#0055a5; margin-bottom:30px;}
 .badge { padding:10px 20px; border-radius:20px; font-weight:bold; color:white; text-align:center; animation: glow 1.5s infinite alternate; margin:10px 0;}
 .gold { background:#FFD700; } .silver { background:#C0C0C0; } .bronze { background:#CD7F32; }
 @keyframes glow { from { box-shadow:0 0 5px #fff;} to { box-shadow:0 0 20px #0055a5; } }
+.footer { text-align:center; font-size:14px; color:#555; margin-top:40px; padding:10px;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -39,6 +41,7 @@ st.markdown("""
 # Header
 # -------------------------------
 st.markdown('<div class="header-title">🚀 Interview Preparation Platform</div>', unsafe_allow_html=True)
+st.markdown('<div class="header-tagline">Sharpen your skills, ace your interviews!</div>', unsafe_allow_html=True)
 
 # -------------------------------
 # Session State Initialization
@@ -54,7 +57,7 @@ if "start_time" not in st.session_state: st.session_state.start_time = None
 if "duration" not in st.session_state: st.session_state.duration = 300  # default 5 min
 
 # -------------------------------
-# Placeholder Question Bank
+# Question Bank
 # -------------------------------
 QUESTION_BANK = {
     "Practice": {  # Aptitude Questions
@@ -270,85 +273,84 @@ QUESTION_BANK = {
         ]
      }   
 }
+# -------------------------------
+# Sidebar
+# -------------------------------
+st.sidebar.title("Navigation")
+st.sidebar.radio("Select Section", ["Practice","Mock Interview","MCQ Quiz","Pseudocode"], key="section")
+st.sidebar.selectbox("Select Difficulty", ["Easy","Medium","Hard"], key="difficulty")
+st.sidebar.title("Extras")
+st.sidebar.button("History")
+st.sidebar.button("Performance & Analytics")
+st.sidebar.button("Results")
 
 # -------------------------------
-# Sidebar: Section + Difficulty + Timer
+# Start / Submit Test Button
 # -------------------------------
-st.sidebar.title("Sections & Settings")
-section = st.sidebar.radio("Select Section", list(QUESTION_BANK.keys()))
-difficulty = st.sidebar.selectbox("Select Difficulty", list(QUESTION_BANK[section].keys()))
-st.session_state.section = section
-st.session_state.difficulty = difficulty
-st.session_state.duration = st.sidebar.number_input("Set Test Duration (seconds)", min_value=60, max_value=3600, value=300, step=30)
+start_col, submit_col = st.columns([8,2])
+with submit_col:
+    if not st.session_state.in_test:
+        if st.button("Start Test / Submit Test"):
+            st.session_state.in_test = True
+            st.session_state.current_question = 0
+            st.session_state.selected_answers = []
+            st.session_state.start_time = time.time()
+            questions = QUESTION_BANK[st.session_state.section][st.session_state.difficulty][:]
+            random.shuffle(questions)
+            st.session_state.shuffled_questions = questions
 
 # -------------------------------
-# Start Test
-# -------------------------------
-if not st.session_state.in_test:
-    if st.button("Start Test"):
-        st.session_state.in_test = True
-        st.session_state.current_question = 0
-        st.session_state.selected_answers = []
-        st.session_state.start_time = time.time()
-        questions = QUESTION_BANK[section][difficulty][:]
-        random.shuffle(questions)
-        st.session_state.shuffled_questions = questions
-
-# -------------------------------
-# Display Questions
+# Display Questions & Live Timer
 # -------------------------------
 if st.session_state.in_test:
     questions = st.session_state.shuffled_questions
     q_idx = st.session_state.current_question
     q_data = questions[q_idx]
 
-    # Timer
-    elapsed = int(time.time() - st.session_state.start_time)
-    remaining = max(0, st.session_state.duration - elapsed)
-    minutes, seconds = divmod(remaining, 60)
-    st.progress((q_idx)/len(questions))
-    st.markdown(f"⏰ Time Remaining: {minutes:02d}:{seconds:02d}")
+    timer_placeholder = st.empty()  # live timer
 
-    if remaining == 0:
-        st.session_state.in_test = False
-        st.warning("⏳ Time's up! Test ended.")
-        st.success(f"Your score: {st.session_state.score}/{len(questions)}")
+    while st.session_state.in_test:
+        elapsed = int(time.time() - st.session_state.start_time)
+        remaining = max(0, st.session_state.duration - elapsed)
+        minutes, seconds = divmod(remaining, 60)
+        timer_placeholder.markdown(f"⏰ Time Remaining: {minutes:02d}:{seconds:02d}")
+        if remaining == 0:
+            st.session_state.in_test = False
+            st.warning("⏳ Time's up! Test ended.")
+            st.success(f"Your score: {sum(1 for i, ans in enumerate(st.session_state.selected_answers) if ans==questions[i]['a'])}/{len(questions)}")
+            break
+        break  # break to render the question first
 
-    else:
-        # Question Display
-        st.markdown(f"<div class='question-card'><b>Q{q_idx+1}:</b> {q_data['q']}</div>", unsafe_allow_html=True)
-        answer = st.radio("Select your answer", q_data['options'], key=q_idx)
+    # Question
+    st.markdown(f"<div class='question-card'><b>Q{q_idx+1}:</b> {q_data['q']}</div>", unsafe_allow_html=True)
+    answer = st.radio("Select your answer", q_data['options'], key=q_idx)
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Submit Answer"):
-                if len(st.session_state.selected_answers) > q_idx:
-                    st.session_state.selected_answers[q_idx] = answer
-                else:
-                    st.session_state.selected_answers.append(answer)
+    # Navigation Buttons
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if q_idx > 0 and st.button("Previous Question"):
+            st.session_state.current_question -= 1
+    with col2:
+        if st.button("Save Answer"):
+            if len(st.session_state.selected_answers) > q_idx:
+                st.session_state.selected_answers[q_idx] = answer
+            else:
+                st.session_state.selected_answers.append(answer)
+    with col3:
+        if st.button("Next Question"):
+            if len(st.session_state.selected_answers) <= q_idx:
+                st.session_state.selected_answers.append(answer)
+            if q_idx + 1 < len(questions):
+                st.session_state.current_question += 1
+            else:
+                st.session_state.in_test = False
+                score = sum(1 for i, ans in enumerate(st.session_state.selected_answers) if ans==questions[i]['a'])
+                st.success(f"🎉 Test Completed! Your score: {score}/{len(questions)}")
+                if score==len(questions):
+                    st.markdown('<div class="badge gold">🏆 Perfect Score!</div>', unsafe_allow_html=True)
+                    rain()
 
-                # Update Score
-                st.session_state.score = sum(
-                    1 for idx, ans in enumerate(st.session_state.selected_answers)
-                    if ans == questions[idx]['a']
-                )
-
-                # Next Question or Finish
-                if q_idx + 1 < len(questions):
-                    st.session_state.current_question += 1
-                else:
-                    st.session_state.in_test = False
-                    st.success(f"🎉 Test Completed! Your score: {st.session_state.score}/{len(questions)}")
-                    if st.session_state.score == len(questions):
-                        st.markdown('<div class="badge gold">🏆 Perfect Score!</div>', unsafe_allow_html=True)
-                        rain()
-                    elif st.session_state.score >= len(questions)//2:
-                        st.markdown('<div class="badge silver">🥈 Good Job!</div>', unsafe_allow_html=True)
-                    else:
-                        st.markdown('<div class="badge bronze">🥉 Keep Practicing</div>', unsafe_allow_html=True)
-
-        with col2:
-            if st.session_state.current_question > 0:
-                if st.button("Previous Question"):
-                    st.session_state.current_question -= 1
-
+# -------------------------------
+# Footer
+# -------------------------------
+st.markdown('<div class="footer">Developed by Anil & Team</div>', unsafe_allow_html=True)
