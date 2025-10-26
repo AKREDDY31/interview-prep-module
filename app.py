@@ -26,7 +26,7 @@ QUESTION_FILE = "question_bank.json"
 # -------------------------------
 # Default Question Bank (WITH SAMPLE QUESTIONS)
 # -------------------------------
-# "Code Runner" has been removed as requested.
+# This is the sample data you requested.
 DEFAULT_BANK = {
     "Practice": {
         "Aptitude": {
