@@ -59,7 +59,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------- Your QUESTION_BANK goes here! -------------------
-# Fill/replace THIS dict and keep the rest of the code as per your requirements.
 QUESTION_BANK ={
     "Practice": {
         "Aptitude": {
@@ -1075,7 +1074,7 @@ def pick_questions(section, topic, diff, count):
         if section in QUESTION_BANK and topic in QUESTION_BANK[section] and diff in QUESTION_BANK[section][topic]:
             pool = QUESTION_BANK[section][topic][diff].copy()
         random.shuffle(pool)
-        while len(pool) < count:
+        while len(pool) < count and pool:
             pool.append(random.choice(pool))
         return pool[:count]
     except Exception:
@@ -1137,7 +1136,7 @@ if st.session_state.mode == "main":
 
     # ---------- Practice Section ----------
     with section_tabs[0]:
-        if "Practice" in TOPICS:
+        if "Practice" in TOPICS and TOPICS["Practice"]:
             topic = st.selectbox("Select Topic", TOPICS["Practice"], key="practice_topic")
             diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="practice_diff")
             count = st.slider("Number of Questions", 1, 15, 5, key="practice_count")
@@ -1159,7 +1158,7 @@ if st.session_state.mode == "main":
 
     # ---------- Mock Interview Section ----------
     with section_tabs[1]:
-        if "Mock Interview" in TOPICS:
+        if "Mock Interview" in TOPICS and TOPICS["Mock Interview"]:
             topic = st.selectbox("Interview Type", TOPICS["Mock Interview"], key="mock_type")
             diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="mock_diff")
             count = st.slider("Number of Questions", 1, 15, 5, key="mock_count")
@@ -1181,7 +1180,7 @@ if st.session_state.mode == "main":
 
     # ---------- MCQ Quiz ----------
     with section_tabs[2]:
-        if "MCQ Quiz" in TOPICS:
+        if "MCQ Quiz" in TOPICS and TOPICS["MCQ Quiz"]:
             topic = st.selectbox("Quiz Topic", TOPICS["MCQ Quiz"], key="mcq_topic")
             diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="mcq_diff")
             count = st.slider("Number of MCQs", 1, 15, 5, key="mcq_count")
@@ -1203,8 +1202,8 @@ if st.session_state.mode == "main":
 
     # ---------- Code Runner ----------
     with section_tabs[3]:
-        if "Code Runner" in TOPICS:
-            topic = TOPICS["Code Runner"][0] if TOPICS["Code Runner"] else ""
+        if "Code Runner" in TOPICS and TOPICS["Code Runner"]:
+            topic = TOPICS["Code Runner"][0]
             diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="code_diff")
             count = st.slider("Number of Code Questions", 1, 15, 5, key="code_count")
             if st.button("▶ Start Code Practice", key="code_start"):
@@ -1225,8 +1224,8 @@ if st.session_state.mode == "main":
 
     # ---------- Pseudocode ----------
     with section_tabs[4]:
-        if "Pseudocode" in TOPICS:
-            topic = TOPICS["Pseudocode"][0] if TOPICS["Pseudocode"] else ""
+        if "Pseudocode" in TOPICS and TOPICS["Pseudocode"]:
+            topic = TOPICS["Pseudocode"][0]
             diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="pseudo_diff")
             count = st.slider("Number of Pseudocode Questions", 1, 15, 5, key="pseudo_count")
             if st.button("▶ Start Pseudocode", key="pseudo_start"):
@@ -1294,28 +1293,21 @@ elif st.session_state.mode == "exam":
     else:
         st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
         total_time = 30 * 60
-        # --- Real-time timer update ---
-        if "timer" not in st.session_state:
-            st.session_state.timer = time.time()
+
         elapsed = int(time.time() - ex["start"])
         remaining = max(total_time - elapsed, 0)
         m, s = divmod(remaining, 60)
 
         colT1, colT2 = st.columns([7, 1])
         timer_placeholder = colT1.empty()
-        def timer_update():
-            nonlocal remaining, timer_placeholder
-            timer_placeholder.markdown(
-                f"<span style='color:{'red' if remaining <= 300 else 'green'};font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>",
-                unsafe_allow_html=True
-            )
-
-        timer_update()
-        time.sleep(1)
+        timer_placeholder.markdown(
+            f"<span style='color:{'red' if remaining <= 300 else 'green'};font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>",
+            unsafe_allow_html=True
+        )
         if remaining > 0:
+            time.sleep(1)
             st.experimental_rerun()
         else:
-            # Only auto-submit if not already at submission
             st.warning("⏰ Time over! Submitting...")
             details = []
             if ex["section"] in ["Practice"]:
@@ -1415,6 +1407,3 @@ elif st.session_state.mode == "exam":
 
 # --- Footer ---
 st.markdown("<div style='text-align:center;padding:10px;color:#5612c6;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
-
-
-
