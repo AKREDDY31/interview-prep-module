@@ -318,8 +318,9 @@ if "mode" not in st.session_state:
 # MAIN PAGE
 # -------------------------------
 if st.session_state.mode == "main":
-    st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
-    st.write("Interactive Interview Practice and Analytics Portal")
+  st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align:center;color:#333333;'>Interactive Interview Practice and Analytics Portal</h3>", unsafe_allow_html=True)
+
 
     section_tabs = st.tabs([
         "🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💡 Pseudocode",
@@ -481,3 +482,4 @@ elif st.session_state.mode == "exam":
 # Footer
 # -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+
