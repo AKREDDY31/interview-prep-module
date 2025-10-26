@@ -61,7 +61,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------- Question Bank Example (expand as needed) -------------------
-    QUESTION_BANK = {
+QUESTION_BANK = {
     "Practice": {
         "Aptitude": {
             "Easy": [
@@ -1449,4 +1449,5 @@ elif st.session_state.mode == "exam":
 
 # --- Footer ---
 st.markdown("<div style='text-align:center;padding:10px;color:#5612c6;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+
 
