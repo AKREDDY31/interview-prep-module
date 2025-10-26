@@ -13,9 +13,25 @@ st.set_page_config(
 )
 
 # ---------------------------
+# Sidebar Instructions
+# ---------------------------
+st.sidebar.title("Instructions")
+st.sidebar.info("""
+1. Select a section and difficulty level.  
+2. Choose the number of questions.  
+3. Click **Start Test** to begin.  
+4. During the test:  
+   - Use **Save & Next** to save answers and move to the next question.  
+   - Do **not refresh** the page during an active test.  
+5. Submit your test before time ends or wait for auto-submit.  
+6. View your results in the **Results** or **History** tabs.
+""")
+
+# ---------------------------
 # Question Bank Placeholder
 # ---------------------------
-DEFAULT_BANK = {
+if "QUESTION_BANK" not in st.session_state:
+    st.session_state.DEFAULT_BANK = {
     "Practice": {  # Aptitude Questions
         "Easy": [
             {"q": "If 5x + 3 = 18, what is x?", "a": "3", "options": ["2","3","4","5"]},
@@ -229,6 +245,9 @@ DEFAULT_BANK = {
         ]
      }   
 }
+
+QUESTION_BANK = st.session_state.QUESTION_BANK
+
 # ---------------------------
 # History helpers
 # ---------------------------
@@ -340,7 +359,6 @@ def render_section_ui(section):
     with col3:
         if st.button("▶ Start Test", key=f"{section}_start"):
             start_exam(section, level, count)
-
     st.write("---")
     st.markdown("**Tips:** Use Save & Next button during the test. Do not refresh the page while an attempt is active.")
 
@@ -349,7 +367,6 @@ def render_section_ui(section):
 # ---------------------------
 if not st.session_state.exam:
     tabs = st.tabs(["🧠 Practice","🎤 Mock Interview","📝 MCQ Quiz","💡 Pseudocode","📈 Results","📊 Analytics","🕓 History"])
-    tab_names = ["Practice","Mock Interview","MCQ Quiz","Pseudocode","Results","Analytics","History"]
     render_section_ui("Practice")
     render_section_ui("Mock Interview")
     render_section_ui("MCQ Quiz")
@@ -443,7 +460,6 @@ if st.session_state.exam:
 
     # Submit Test Button
     if st.button("🏁 Submit Test") or submit_now:
-        # compute score
         correct_count = 0
         details=[]
         for i_q, qobj in enumerate(ex["qs"]):
