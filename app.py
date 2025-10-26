@@ -1227,7 +1227,7 @@ QUESTION_BANK ={
 }
 }
 
- # <-- Fill this with your actual questions
+  # <-- Fill this with your actual questions
 
 def load_history():
     try:
@@ -1287,13 +1287,13 @@ if "mode" not in st.session_state:
 def setup_test(section_name, key_prefix):
     st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
     section_dict = QUESTION_BANK.get(section_name, {})
-    topics = list(section_dict.keys()) if isinstance(section_dict, dict) else []
+    topics = [k for k, v in section_dict.items() if isinstance(v, dict)]
     if not topics:
         st.warning(f"No topics found for section {section_name}.")
         return
     selected_topic = st.selectbox("Select Topic", topics, key=f"{key_prefix}_topic")
-    topic_dict = section_dict.get(selected_topic, {}) if selected_topic else {}
-    difficulties = list(topic_dict.keys()) if isinstance(topic_dict, dict) else []
+    topic_dict = section_dict.get(selected_topic, {})
+    difficulties = [k for k, v in topic_dict.items() if isinstance(v, list)]
     if not difficulties:
         st.warning(f"No difficulties found for topic {selected_topic}.")
         return
@@ -1460,7 +1460,7 @@ elif st.session_state.mode == "exam":
             st.success("Answer saved ✅")
         st.progress((idx + 1) / len(ex["qs"]))
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
-        # Force rerun for second-wise update of timer
+        # Second-to-second timer!
         st.experimental_rerun()
 
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
