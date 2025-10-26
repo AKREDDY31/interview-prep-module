@@ -1056,7 +1056,6 @@ TOPICS = {
     k: list(v.keys()) for k, v in QUESTION_BANK.items() if isinstance(v, dict)
 }
 
-# ----------------------- Utility Functions -------------------------------
 def tfidf_similarity(a, b):
     if not a or not b or not a.strip() or not b.strip():
         return 0.0
@@ -1105,7 +1104,6 @@ def record_result(section, topic, score, details):
     })
     save_history(h)
 
-# ---------------------- Sidebar Instructions & Tips ----------------------
 st.sidebar.markdown("""
 <div class="cardy">
 <div class="cardy-title">🛠️ Instructions & Tips</div>
@@ -1120,11 +1118,9 @@ st.sidebar.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ---------------------- Session Defaults -----------------------
 if "mode" not in st.session_state:
     st.session_state.mode = "main"
 
-# ---------------------- Main Page: Selection Tabs -----------------------
 if st.session_state.mode == "main":
     st.markdown("<div class='big-title'>Interview Preparation Platform</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>Interactive Interview Practice and Analytics Portal</div>", unsafe_allow_html=True)
@@ -1134,7 +1130,6 @@ if st.session_state.mode == "main":
         "📈 Results", "📊 Analytics", "🕓 History"
     ])
 
-    # ---------- Practice Section ----------
     with section_tabs[0]:
         if "Practice" in TOPICS and TOPICS["Practice"]:
             topic = st.selectbox("Select Topic", TOPICS["Practice"], key="practice_topic")
@@ -1156,7 +1151,6 @@ if st.session_state.mode == "main":
         else:
             st.info("No topics available for Practice. Please fill the QUESTION_BANK.")
 
-    # ---------- Mock Interview Section ----------
     with section_tabs[1]:
         if "Mock Interview" in TOPICS and TOPICS["Mock Interview"]:
             topic = st.selectbox("Interview Type", TOPICS["Mock Interview"], key="mock_type")
@@ -1178,7 +1172,6 @@ if st.session_state.mode == "main":
         else:
             st.info("No topics available for Mock Interview. Please fill the QUESTION_BANK.")
 
-    # ---------- MCQ Quiz ----------
     with section_tabs[2]:
         if "MCQ Quiz" in TOPICS and TOPICS["MCQ Quiz"]:
             topic = st.selectbox("Quiz Topic", TOPICS["MCQ Quiz"], key="mcq_topic")
@@ -1200,7 +1193,6 @@ if st.session_state.mode == "main":
         else:
             st.info("No topics available for MCQ Quiz. Please fill the QUESTION_BANK.")
 
-    # ---------- Code Runner ----------
     with section_tabs[3]:
         if "Code Runner" in TOPICS and TOPICS["Code Runner"]:
             topic = TOPICS["Code Runner"][0]
@@ -1222,7 +1214,6 @@ if st.session_state.mode == "main":
         else:
             st.info("No questions available for Code Runner. Please fill the QUESTION_BANK.")
 
-    # ---------- Pseudocode ----------
     with section_tabs[4]:
         if "Pseudocode" in TOPICS and TOPICS["Pseudocode"]:
             topic = TOPICS["Pseudocode"][0]
@@ -1252,7 +1243,11 @@ if st.session_state.mode == "main":
             st.info("No test results found.")
         else:
             df = pd.DataFrame(h)
-            st.dataframe(df[["section","topic","timestamp","score"]])
+            cols = [c for c in ["section","topic","timestamp","score"] if c in df.columns]
+            if cols:
+                st.dataframe(df[cols])
+            else:
+                st.dataframe(df)
 
     # ---------- Analytics ----------
     with section_tabs[6]:
@@ -1262,12 +1257,14 @@ if st.session_state.mode == "main":
             st.info("No data to analyze.")
         else:
             df = pd.DataFrame(h)
-            if "score" in df.columns:
+            if "score" in df.columns and "section" in df.columns:
                 fig = px.bar(df, x="section", y="score", color="section", title="Score per Section", text_auto=True)
                 st.plotly_chart(fig, use_container_width=True)
                 avg_scores = df.groupby("section")["score"].mean().reset_index()
                 fig2 = px.pie(avg_scores, names="section", values="score", title="Strength vs Weakness")
                 st.plotly_chart(fig2, use_container_width=True)
+            else:
+                st.info("Not enough result data for analytics.")
 
     # ---------- History ----------
     with section_tabs[7]:
@@ -1282,7 +1279,6 @@ if st.session_state.mode == "main":
                     for d in rec.get("details", []):
                         st.write(f"Q: {d['q']} — Score: {d.get('score', 'N/A')}")
 
-# ---------------------- Exam Page: Unified Logic for All Sections -----------------
 elif st.session_state.mode == "exam":
     ex = st.session_state.get("exam", None)
     if not ex:
@@ -1405,5 +1401,4 @@ elif st.session_state.mode == "exam":
         st.progress((idx + 1) / len(ex["qs"]))
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
 
-# --- Footer ---
 st.markdown("<div style='text-align:center;padding:10px;color:#5612c6;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
