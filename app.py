@@ -1287,7 +1287,7 @@ if "mode" not in st.session_state:
 def setup_test(section_name, key_prefix):
     st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
     section_dict = QUESTION_BANK.get(section_name, {})
-    topics = list(section_dict.keys())
+    topics = list(section_dict.keys()) if isinstance(section_dict, dict) else []
     if not topics:
         st.warning(f"No topics found for section {section_name}.")
         return
@@ -1295,7 +1295,10 @@ def setup_test(section_name, key_prefix):
     selected_topic = topics[selected_topic_idx] if topics else None
 
     topic_dict = section_dict.get(selected_topic, {}) if selected_topic else {}
-    difficulties = list(topic_dict.keys())
+    if isinstance(topic_dict, dict):
+        difficulties = list(topic_dict.keys())
+    else:
+        difficulties = []
     if not difficulties:
         st.warning(f"No difficulties found for topic {selected_topic}.")
         return
