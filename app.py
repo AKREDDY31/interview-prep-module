@@ -1402,7 +1402,7 @@ if st.session_state.mode == "main":
             has_topics = False
         
         topic = None
-        topics_list = []
+        topics_list = [] # This is the "array value to the topics"
         if has_topics:
             # This section (e.g., Practice) has topics
             topics_list = first_level_keys # This is the "array of topics"
@@ -1411,17 +1411,17 @@ if st.session_state.mode == "main":
                 return
             topic = st.selectbox("Select Topic", topics_list, key=f"{key_prefix}_topic")
         else:
-            # This section (e.g., Code Runner) doesn't have topics
+            # This section (e..g, Code Runner) doesn't have topics
             pass 
 
         # This part is now safe, it runs for both structures
-        difficulty_list = ["Easy", "Medium", "Hard"] # This is the "array of difficulties"
+        difficulty_list = ["Easy", "Medium", "Hard"] # This is the "array for difficulty"
         diff = st.selectbox("Difficulty", difficulty_list, key=f"{key_prefix}_diff")
         count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
         start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
         
         if start_btn:
-            # Pass 'topic' (which is None if no topics)
+            # Fetch questions based on the selected array values
             qs = pick_questions(section_name, topic, diff, count) 
             
             if not qs: # Check if pick_questions returned an empty list
