@@ -1227,7 +1227,7 @@ QUESTION_BANK ={
 }
 }
 
-  # <-- FILL THIS WITH YOUR DATA
+ # <-- Fill this with your actual questions
 
 def load_history():
     try:
@@ -1291,20 +1291,13 @@ def setup_test(section_name, key_prefix):
     if not topics:
         st.warning(f"No topics found for section {section_name}.")
         return
-    selected_topic_idx = st.selectbox("Select Topic", range(len(topics)), format_func=lambda i: topics[i], key=f"{key_prefix}_topic")
-    selected_topic = topics[selected_topic_idx] if topics else None
-
+    selected_topic = st.selectbox("Select Topic", topics, key=f"{key_prefix}_topic")
     topic_dict = section_dict.get(selected_topic, {}) if selected_topic else {}
-    if isinstance(topic_dict, dict):
-        difficulties = list(topic_dict.keys())
-    else:
-        difficulties = []
+    difficulties = list(topic_dict.keys()) if isinstance(topic_dict, dict) else []
     if not difficulties:
         st.warning(f"No difficulties found for topic {selected_topic}.")
         return
-    selected_diff_idx = st.selectbox("Difficulty", range(len(difficulties)), format_func=lambda i: difficulties[i], key=f"{key_prefix}_diff")
-    selected_diff = difficulties[selected_diff_idx] if difficulties else None
-
+    selected_diff = st.selectbox("Difficulty", difficulties, key=f"{key_prefix}_diff")
     count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
     start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
     if start_btn:
@@ -1381,19 +1374,17 @@ elif st.session_state.mode == "exam":
             f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>",
             unsafe_allow_html=True
         )
+        # --- Timer Logic: update every second ---
         total_time = 30 * 60
         elapsed = int(time.time() - ex["start"])
         remaining = max(total_time - elapsed, 0)
         m, s = divmod(remaining, 60)
         timer_placeholder = st.empty()
-        if remaining <= 300:
-            timer_placeholder.markdown(f"<span style='color:red;font-weight:bold;'>⚠️ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
-        else:
-            timer_placeholder.markdown(f"<span style='color:green;font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
+        timer_html = f"<span style='color:{'red' if remaining <= 300 else 'green'};font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>"
+        timer_placeholder.markdown(timer_html, unsafe_allow_html=True)
 
         def calculate_and_save_results():
             details = []
-            # MCQ, Code Runner, Pseudocode, etc:
             is_mcq = (ex["section"] in ["MCQ Quiz", "Pseudocode", "Python", "DBMS", "SQL", "Computer Networks", "Operating System"])
             has_options = any("options" in q for q in ex["qs"])
             if is_mcq or has_options:
@@ -1469,7 +1460,7 @@ elif st.session_state.mode == "exam":
             st.success("Answer saved ✅")
         st.progress((idx + 1) / len(ex["qs"]))
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
-        st.rerun()
-        st.stop()
+        # Force rerun for second-wise update of timer
+        st.experimental_rerun()
 
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
