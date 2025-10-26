@@ -60,7 +60,8 @@ st.markdown("""
 
 # ---------------------- Your QUESTION_BANK goes here! -------------------
 # Fill/replace THIS dict and keep the rest of the code as per your requirements.
-QUESTION_BANK = {
+QUESTION_BANK = 
+{
     "Practice": {
         "Aptitude": {
             "Easy": [
