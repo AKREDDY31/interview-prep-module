@@ -16,7 +16,7 @@ st.set_page_config(
 
 # ------------------------------- Files -------------------------------
 HISTORY_FILE = "history.json"
-QUESTION_BANK ={
+DEFAULT_BANK={
     "Practice": {
         "Aptitude": {
             "Easy": [
@@ -1468,3 +1468,4 @@ elif st.session_state.mode == "exam":
 
 # ------------------------------- Footer -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+
