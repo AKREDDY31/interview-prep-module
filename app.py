@@ -6,8 +6,11 @@ from datetime import datetime
 # ---------------------------
 # Page config
 # ---------------------------
-st.set_page_config(page_title="Interview Preparation Platform",
-                   layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="Interview Preparation Platform",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # ---------------------------
 # Default Question Bank placeholder
@@ -326,6 +329,8 @@ if "exam" not in st.session_state:
     st.session_state.exam = None
 if "active_section" not in st.session_state:
     st.session_state.active_section = None
+if "last_auto_save" not in st.session_state:
+    st.session_state.last_auto_save = time.time()
 
 # ---------------------------
 # Start exam function
@@ -347,18 +352,6 @@ def start_exam(section, difficulty, count, total_time_minutes=30):
         "duration": int(total_time_minutes * 60)
     }
     st.session_state.active_section = section
-    st.rerun()
-
-# ---------------------------
-# Auto-refresh helper
-# ---------------------------
-def auto_refresh(seconds=1):
-    if "last_refresh" not in st.session_state:
-        st.session_state.last_refresh = time.time()
-    now = time.time()
-    if now - st.session_state.last_refresh >= seconds:
-        st.session_state.last_refresh = now
-        st.experimental_rerun()
 
 # ---------------------------
 # Render section tabs (Practice / Mock / MCQ / Pseudocode)
@@ -383,6 +376,7 @@ def render_section_ui(section, tab_index):
         st.write("Tips: Use the navigation buttons during the test. Do not refresh the page while an attempt is active.")
         if start_btn:
             start_exam(section, level, count, total_time_minutes=30)
+            st.experimental_rerun()  # Open exam on a fresh clean page
 
 for sec, idx in zip(tab_names[:4], range(4)):
     render_section_ui(sec, idx)
@@ -447,8 +441,13 @@ with tabs[6]:
 # Exam rendering
 # ---------------------------
 if st.session_state.exam:
-    auto_refresh(1)  # live refresh
     ex = st.session_state.exam
+
+    # Auto-save every 10 sec
+    now = time.time()
+    if now - st.session_state.last_auto_save > 10:
+        st.session_state.last_auto_save = now
+        st.success("Auto-saved answers ✅", icon="💾")
 
     # Exam card
     st.markdown(f"<div style='padding:10px;border-radius:8px;background:#eef7ff'><b>Exam in progress:</b> {ex['section']} — {ex['difficulty']}</div>", unsafe_allow_html=True)
@@ -489,13 +488,13 @@ if st.session_state.exam:
             if idx > 0:
                 ex["idx"] -= 1
                 st.session_state.exam = ex
-                st.rerun()
+                st.experimental_rerun()
     with c2:
         if st.button("Next ➡"):
             if idx < len(ex["qs"]) - 1:
                 ex["idx"] += 1
                 st.session_state.exam = ex
-                st.rerun()
+                st.experimental_rerun()
     with c3:
         if st.button("💾 Save Answer"):
             st.success("Answer saved ✅")
@@ -503,6 +502,7 @@ if st.session_state.exam:
         if st.button("🏁 Submit Test"):
             should_submit = True
 
+    # Submit
     if should_submit:
         correct_count = 0
         details = []
@@ -532,7 +532,7 @@ if st.session_state.exam:
         if score == len(ex['qs']):
             st.balloons()
         st.session_state.exam = None
-        st.rerun()
+        st.experimental_rerun()
 
 # ---------------------------
 # Footer
