@@ -167,9 +167,9 @@ QUESTION_BANK ={
                 {"q": "Mother is twice as old as son. After 10 years, she will be 10 years older. What is son's age?", "a":"10"},
                 {"q": "If OIL is coded as 161225, code for INK?", "a":"14911"},
             ]
-        },
-        
-        "Analytical Reasoning":{
+        },        
+        "Analytical Reasoning":
+        {
             "Easy": [
                 {"q":"If all roses are flowers, and some flowers fade, are all roses fade?", "a":"Cannot say"},
                 {"q":"What comes next? 100, 97, 89, 76, ?", "a":"58"},
@@ -221,7 +221,7 @@ QUESTION_BANK ={
                 {"q":"If 2 machines make 4 toys in 2 hrs, how long for 6 toys?", "a":"3 hours"},
                 {"q":"If book's price rises from ₹200 to ₹220, percentage increase?", "a":"10%"},
             ]
-        }
+        },
     "Python": {
         "Easy": [
             {"q": "What does print(2**3) output?", "options": ["5", "6", "8", "9"], "a": "8"},
@@ -1415,5 +1415,6 @@ elif st.session_state.mode == "exam":
 
 # --- Footer ---
 st.markdown("<div style='text-align:center;padding:10px;color:#5612c6;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+
 
 
