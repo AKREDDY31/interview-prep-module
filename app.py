@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -8,24 +7,18 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import plotly.express as px
 
-# -------------------------------
-# Page Config
-# -------------------------------
+# ------------------------------- Page Config -------------------------------
 st.set_page_config(
     page_title="Interview Preparation Platform",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# -------------------------------
-# Files
-# -------------------------------
+# ------------------------------- Files -------------------------------
 HISTORY_FILE = "history.json"
 
-# -------------------------------
-# Default Question Bank
-# -------------------------------
-QUESTION_BANK ={
+# ------------------------------- Default Question Bank -------------------------------
+DEFAULT_BANK ={
     "Practice": {
         "Aptitude": {
             "Easy": [
@@ -1235,9 +1228,9 @@ QUESTION_BANK ={
     ]
 }
 }
-# -------------------------------
-# Load Question Bank
-# -------------------------------
+ # <<---- <- DEFINE THIS, FILL LATER!
+
+# ------------------------------- Load Question Bank -------------------------------
 try:
     if os.path.exists("question_bank.json"):
         with open("question_bank.json", "r", encoding="utf-8") as f:
@@ -1247,11 +1240,7 @@ try:
 except:
     QUESTION_BANK = DEFAULT_BANK
 
-# -------------------------------
-# Helper Functions
-# -------------------------------
-
-# ✅ Fixed TF-IDF Function
+# ------------------------------- Helper Functions -------------------------------
 def tfidf_similarity(a, b):
     if not a or not b or not a.strip() or not b.strip():
         return 0.0
@@ -1259,16 +1248,16 @@ def tfidf_similarity(a, b):
         v = TfidfVectorizer()
         tfidf = v.fit_transform([a, b])
         sim = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
-        return round(min(sim * 100, 100), 2)  # cap at 100
+        return round(min(sim * 100, 100), 2)
     except ValueError:
         return 0.0
 
 def pick_questions(section, difficulty, count):
     pool = QUESTION_BANK.get(section, {}).get(difficulty, []).copy()
     random.shuffle(pool)
-    while len(pool) < count:
+    while len(pool) < count and pool:
         pool.append(random.choice(pool))
-    return pool[:count]
+    return pool[:count] if pool else []
 
 def load_history():
     try:
@@ -1292,9 +1281,7 @@ def record_result(section, score, details):
     })
     save_history(h)
 
-# -------------------------------
-# Sidebar Instructions
-# -------------------------------
+# ------------------------------- Sidebar Instructions -------------------------------
 st.sidebar.title("🧭 Instructions & Tips")
 st.sidebar.markdown("""
 1. Select Section & Difficulty, click **Start Test**.
@@ -1305,25 +1292,20 @@ st.sidebar.markdown("""
 6. Analytics shows strengths & weaknesses.
 """)
 
-# -------------------------------
-# Session State Defaults
-# -------------------------------
+# ------------------------------- Session State Defaults -------------------------------
 if "mode" not in st.session_state:
     st.session_state.mode = "main"
 
-# -------------------------------
-# MAIN PAGE
-# -------------------------------
+# ------------------------------- MAIN PAGE -------------------------------
 if st.session_state.mode == "main":
     st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
     st.write("Interactive Interview Practice and Analytics Portal")
 
     section_tabs = st.tabs([
-        "🧠 Practice", "🎤 Mock Interview", " MCQ Quiz", "💻 Code Runner", "📝 Pseudocode",
+        "🧠 Practice", "🎤 Mock Interview", "MCQ Quiz", "💻 Code Runner", "📝 Pseudocode",
         "📈 Results", "📊 Performance & Analytics", "🕓 History"
     ])
 
-    # ---------- Section Generator ----------
     def setup_test(section_name, key_prefix):
         st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
         topic = st.selectbox("Select Topic", ["Practice"], key=f"{key_prefix}_topic")
@@ -1343,15 +1325,14 @@ if st.session_state.mode == "main":
             }
             st.session_state.mode = "exam"
             st.experimental_rerun()
+            st.stop()
 
-    # ---------- All Sections ----------
     with section_tabs[0]: setup_test("Practice", "practice")
     with section_tabs[1]: setup_test("Mock Interview", "mock")
     with section_tabs[2]: setup_test("MCQ Quiz", "mcq")
     with section_tabs[3]: setup_test("Code Runner", "code")
     with section_tabs[4]: setup_test("Pseudocode", "pseudo")
 
-    # ---------- Results ----------
     with section_tabs[5]:
         st.subheader("📈 Results")
         h = load_history()
@@ -1362,7 +1343,6 @@ if st.session_state.mode == "main":
             df_display = df[["section", "timestamp", "score"]].copy()
             st.dataframe(df_display)
 
-    # ---------- Performance & Analytics ----------
     with section_tabs[6]:
         st.subheader("📊 Performance & Analytics")
         h = load_history()
@@ -1377,7 +1357,6 @@ if st.session_state.mode == "main":
                 fig2 = px.pie(avg_scores, names="section", values="score", title="Strength vs Weakness")
                 st.plotly_chart(fig2, use_container_width=True)
 
-    # ---------- History ----------
     with section_tabs[7]:
         st.subheader("🕓 History")
         h = load_history()
@@ -1390,34 +1369,31 @@ if st.session_state.mode == "main":
                     for d in rec.get("details", []):
                         st.write(f"Q: {d['q']} — Score: {d.get('score', 'N/A')}")
 
-# -------------------------------
-# EXAM PAGE
-# -------------------------------
+# ------------------------------- EXAM PAGE -------------------------------
 elif st.session_state.mode == "exam":
     if "exam" not in st.session_state:
         st.error("No active test.")
         if st.button("Return Home"):
             st.session_state.mode = "main"
             st.experimental_rerun()
+            st.stop()
     else:
         ex = st.session_state.exam
         st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
 
-        # ----- Timer -----
         total_time = 30 * 60
         elapsed = int(time.time() - ex["start"])
         remaining = max(total_time - elapsed, 0)
         m, s = divmod(remaining, 60)
+
         if remaining <= 300:
             st.markdown(f"<span style='color:red;font-weight:bold;'>⚠️ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
         else:
             st.markdown(f"<span style='color:green;font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
 
-        # ✅ Updated Score Calculation
         def calculate_and_save_results():
             details = []
             if ex["section"] in ["Practice", "Mock Interview"]:
-                # TF-IDF similarity capped at 100
                 scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
                 avg = np.mean(scores) if scores else 0
                 details = [{"q": q["q"], "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
@@ -1427,28 +1403,27 @@ elif st.session_state.mode == "exam":
                     s = 1 if a == q["a"] else 0
                     scores.append(s)
                     details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
-                avg = sum(scores)  # 1 mark per correct
+                avg = sum(scores)
             else:
                 avg = 0
                 details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
-
             record_result(ex["section"], avg, details)
             del st.session_state.exam
             st.session_state.mode = "main"
             st.experimental_rerun()
+            st.stop()
 
-        # Auto-submit
         if remaining == 0:
             st.warning("⏰ Time over! Auto-submitting...")
             calculate_and_save_results()
+            st.stop()
 
-        # Submit button
         col1, col2 = st.columns([8, 1])
         with col2:
             if st.button("🏁 Submit Test"):
                 calculate_and_save_results()
+                st.stop()
 
-        # Question display
         idx = ex["idx"]
         q = ex["qs"][idx]
         st.markdown(
@@ -1468,18 +1443,19 @@ elif st.session_state.mode == "exam":
 
         st.session_state.exam = ex
 
-        # Navigation Buttons
         f1, f2, f3 = st.columns([1, 1, 1])
         if f1.button("⬅ Previous"):
             if idx > 0:
                 ex["idx"] -= 1
                 st.session_state.exam = ex
                 st.experimental_rerun()
+                st.stop()
         if f2.button("Next ➡"):
             if idx < len(ex["qs"]) - 1:
                 ex["idx"] += 1
                 st.session_state.exam = ex
                 st.experimental_rerun()
+                st.stop()
         if f3.button("💾 Save Answer"):
             st.success("Answer saved ✅")
 
@@ -1488,8 +1464,6 @@ elif st.session_state.mode == "exam":
 
         time.sleep(1)
         st.experimental_rerun()
+        st.stop()
 
-# -------------------------------
-# Footer
-# -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
