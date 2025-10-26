@@ -1227,7 +1227,7 @@ QUESTION_BANK ={
 }
 }
 
- # <-- FILL THIS AS NEEDED
+  # <-- FILL THIS WITH YOUR DATA
 
 def load_history():
     try:
@@ -1286,16 +1286,22 @@ if "mode" not in st.session_state:
 
 def setup_test(section_name, key_prefix):
     st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
-    topics = list(QUESTION_BANK.get(section_name, {}).keys())
+    section_dict = QUESTION_BANK.get(section_name, {})
+    topics = list(section_dict.keys())
     if not topics:
         st.warning(f"No topics found for section {section_name}.")
         return
-    selected_topic = st.selectbox("Select Topic", topics, key=f"{key_prefix}_topic")
-    difficulties = list(QUESTION_BANK.get(section_name, {}).get(selected_topic, {}).keys())
+    selected_topic_idx = st.selectbox("Select Topic", range(len(topics)), format_func=lambda i: topics[i], key=f"{key_prefix}_topic")
+    selected_topic = topics[selected_topic_idx] if topics else None
+
+    topic_dict = section_dict.get(selected_topic, {}) if selected_topic else {}
+    difficulties = list(topic_dict.keys())
     if not difficulties:
         st.warning(f"No difficulties found for topic {selected_topic}.")
         return
-    selected_diff = st.selectbox("Difficulty", difficulties, key=f"{key_prefix}_diff")
+    selected_diff_idx = st.selectbox("Difficulty", range(len(difficulties)), format_func=lambda i: difficulties[i], key=f"{key_prefix}_diff")
+    selected_diff = difficulties[selected_diff_idx] if difficulties else None
+
     count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
     start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
     if start_btn:
