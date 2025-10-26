@@ -56,7 +56,7 @@ if "duration" not in st.session_state: st.session_state.duration = 300  # defaul
 # -------------------------------
 # Placeholder Question Bank
 # -------------------------------
-    QUESTION_BANK = {
+QUESTION_BANK = {
     "Practice": {  # Aptitude Questions
         "Easy": [
             {"q": "If 5x + 3 = 18, what is x?", "a": "3", "options": ["2","3","4","5"]},
@@ -351,3 +351,4 @@ if st.session_state.in_test:
             if st.session_state.current_question > 0:
                 if st.button("Previous Question"):
                     st.session_state.current_question -= 1
+
