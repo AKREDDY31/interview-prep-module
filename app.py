@@ -2,508 +2,173 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import json, os, uuid, random, time
 from datetime import datetime
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import plotly.express as px
 
 # -------------------------------
-# Page Config
+# Page Configuration
 # -------------------------------
 st.set_page_config(
-    page_title="Interview Preparation Platform",
+    page_title="AI Interview Preparation Platform",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+)
+
+st.markdown("""
+    <style>
+        .main {
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .stTabs [role="tablist"] {
+            justify-content: center;
+        }
+        .stTabs [role="tab"] {
+            padding: 10px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+        .stTabs [role="tab"][aria-selected="true"] {
+            background-color: #2e7d32;
+            color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# -------------------------------
+# Sidebar Navigation
+# -------------------------------
+st.sidebar.title("📚 Navigation")
+main_section = st.sidebar.radio(
+    "Go to:",
+    ["Practice", "Mock Interview", "MCQ Quiz", "Pseudocode", "Results", "Performance & Analytics", "History"]
 )
 
 # -------------------------------
-# Files
+# PRACTICE SECTION
 # -------------------------------
-HISTORY_FILE = "history.json"
-QUESTION_FILE = "question_bank.json"
+if main_section == "Practice":
+    st.title("🧠 Practice Section")
+    tab1, tab2, tab3, tab4 = st.tabs(["Data Structures", "Algorithms", "Python", "Aptitude"])
 
-# -------------------------------
-# Default Question Bank (WITH SAMPLE QUESTIONS)
-# -------------------------------
-DEFAULT_BANK = {
-    "Practice": {
-        "Aptitude": {
-            "Easy": [
-                {"q": "What is 15% of 200?", "a": "30"},
-                {"q": "If a train travels 120 km in 3 hours, what is its average speed?", "a": "40 km/hr"}
-            ],
-            "Medium": [
-                {"q": "A car travels 60 km/hr for 2.5 hours. How far?", "a": "150 km"}
-            ],
-            "Hard": [
-                {"q": "Find x if 2x + 3x = 45.", "a": "9"}
-            ]
-        },
-        "Logical Reasoning": {
-            "Easy": [
-                {"q": "If all cats are dogs and all dogs are lions, are all cats lions?", "a": "Yes"},
-                {"q": "What comes next: 3, 6, 9, 12, ?", "a": "15"}
-            ]
-        }
-    },
-    "Mock Interview": {
-        "HR": {
-            "Easy": [
-                {"q": "Tell me about yourself.", "a": ""},
-                {"q": "What are your strengths?", "a": ""}
-            ]
-        }
-    },
-    "MCQ Quiz": {
-        "Data Structures": {
-            "Easy": [
-                {"q": "What data structure uses LIFO?", "options": ["Queue", "Stack", "Array", "Tree"], "a": "Stack"},
-                {"q": "Which is used for BFS in graphs?", "options": ["Stack", "Queue", "Heap", "List"], "a": "Queue"}
-            ]
-        }
-    },
-    "Pseudocode": {
-        "Easy": [
-            {
-                "q": "Which pseudocode correctly sums first N natural numbers?",
-                "options": [
-                    "sum = 0; for i = 1 to N: sum = sum + i",
-                    "sum = 0; while i < N: sum = sum + i",
-                    "sum = N * N"
-                ],
-                "a": "sum = 0; for i = 1 to N: sum = sum + i"
-            }
-        ]
-    }
-}
+    with tab1:
+        st.subheader("📘 Data Structures Practice")
+        st.write("Work on common problems like arrays, linked lists, stacks, and queues.")
+
+    with tab2:
+        st.subheader("📗 Algorithms Practice")
+        st.write("Solve sorting, searching, and optimization algorithm challenges.")
+
+    with tab3:
+        st.subheader("🐍 Python Practice")
+        st.write("Sharpen your Python fundamentals and syntax through hands-on exercises.")
+
+    with tab4:
+        st.subheader("🧮 Aptitude Practice")
+        st.write("Test your mathematical and logical reasoning skills.")
 
 # -------------------------------
-# Load Question Bank
+# MOCK INTERVIEW SECTION
 # -------------------------------
-try:
-    if os.path.exists(QUESTION_FILE):
-        with open(QUESTION_FILE, "r", encoding="utf-8") as f:
-            QUESTION_BANK = json.load(f)
-            if not QUESTION_BANK: # Check if file is empty
-                st.warning(f"'{QUESTION_FILE}' is empty. Using sample questions.")
-                QUESTION_BANK = DEFAULT_BANK
-    else:
-        st.warning(f"'{QUESTION_FILE}' not found. Using sample questions.")
-        QUESTION_BANK = DEFAULT_BANK
-except Exception as e:
-    st.warning(f"Error loading '{QUESTION_FILE}': {e}. Using sample questions.")
-    QUESTION_BANK = DEFAULT_BANK
+elif main_section == "Mock Interview":
+    st.title("🎤 Mock Interview Section")
+    tab1, tab2 = st.tabs(["HR Round", "Technical Round"])
 
+    with tab1:
+        st.subheader("💬 HR Interview Simulation")
+        st.write("Practice common HR questions to boost your confidence.")
+
+    with tab2:
+        st.subheader("🖥 Technical Interview Simulation")
+        st.write("Get technical questions from different domains to test your preparation.")
 
 # -------------------------------
-# Helper Functions
+# MCQ QUIZ SECTION
 # -------------------------------
+elif main_section == "MCQ Quiz":
+    st.title("🧩 MCQ Quiz Section")
+    tab1, tab2, tab3 = st.tabs(["Easy", "Medium", "Hard"])
 
-# ✅ TF-IDF Function
-def tfidf_similarity(a, b):
-    """Calculates TF-IDF similarity between two strings, capped at 100."""
-    if not a or not b or not a.strip() or not b.strip():
-        return 0.0
-    try:
-        v = TfidfVectorizer()
-        tfidf = v.fit_transform([a, b])
-        sim = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
-        return round(min(sim * 100, 100), 2)  # cap at 100
-    except ValueError:
-        return 0.0
+    with tab1:
+        st.subheader("🟢 Easy Quiz")
+        st.write("Start with basic level questions to warm up.")
 
-# ✅ CRITICAL FIX: Updated pick_questions function
-def pick_questions(section, topic, difficulty, count):
-    """
-    Fetches questions based on the selected array values (strings).
-    Handles both structures:
-    - Section -> Topic -> Difficulty
-    - Section -> Difficulty
-    """
-    section_data = QUESTION_BANK.get(section, {})
-    
-    # Check if this section has topics or not by looking for difficulty keys
-    # This logic must match setup_test
-    first_level_keys = list(section_data.keys())
-    has_topics = not any(key in first_level_keys for key in ["Easy", "Medium", "Hard"])
+    with tab2:
+        st.subheader("🟠 Medium Quiz")
+        st.write("Try intermediate-level challenges to test your skills.")
 
-    if has_topics:
-        # Structure 1: Section -> Topic -> Difficulty
-        pool = section_data.get(topic, {}).get(difficulty, []).copy()
-    else:
-        # Structure 2: Section -> Difficulty
-        pool = section_data.get(difficulty, []).copy()
-
-    if not pool:
-        return [] # Return empty list if no questions found
-
-    random.shuffle(pool)
-    
-    # Handle request for more questions than available
-    original_pool = pool.copy() 
-    while len(pool) < count:
-        if not original_pool: break # Safety check for empty original pool
-        pool.append(random.choice(original_pool)) 
-        
-    return pool[:count]
-
-
-def load_history():
-    """Loads test history from the JSON file."""
-    try:
-        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return []
-
-def save_history(data):
-    """Saves test history to the JSON file."""
-    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, default=str)
-
-def record_result(section, score, details):
-    """Appends a new test result to the history file."""
-    h = load_history()
-    h.append({
-        "id": str(uuid.uuid4()),
-        "section": section,
-        "timestamp": datetime.utcnow().isoformat(),
-        "score": round(float(score), 2) if score is not None else 0, # Handles None score for N/A
-        "details": details
-    })
-    save_history(h)
+    with tab3:
+        st.subheader("🔴 Hard Quiz")
+        st.write("Attempt advanced and tricky questions for experts.")
 
 # -------------------------------
-# Sidebar Instructions
+# PSEUDOCODE SECTION
 # -------------------------------
-st.sidebar.title("🧭 Instructions & Tips")
-st.sidebar.markdown("""
-1. Select Section, Topic (if any) & Difficulty, click **Start Test**.
-2. Timer starts when test begins.
-3. Don’t switch tabs.
-4. Use Previous | Next | Save Answer.
-5. Submit Test 🏁 at any time.
-6. Analytics shows strengths & weaknesses.
-""")
+elif main_section == "Pseudocode":
+    st.title("📜 Pseudocode Section")
+    tab1, tab2, tab3 = st.tabs(["Logical Flow", "Output Prediction", "Code Completion"])
 
-# -------------------------------
-# Session State Defaults
-# -------------------------------
-if "mode" not in st.session_state:
-    st.session_state.mode = "main"
+    with tab1:
+        st.subheader("🧠 Logical Flow Problems")
+        st.write("Understand the control flow and structure of code logic.")
 
-# -------------------------------
-# MAIN PAGE
-# -------------------------------
-if st.session_state.mode == "main":
-    st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
-    st.write("Interactive Interview Practice and Analytics Portal")
+    with tab2:
+        st.subheader("🔍 Output Prediction")
+        st.write("Guess the output of given code snippets to improve logical reasoning.")
 
-    # Define all section tabs
-    all_sections = list(QUESTION_BANK.keys()) # This is your Section array [0, 1, 2, ...]
-    
-    # Create descriptive tab names (REMOVED Code Runner)
-    tab_name_map = {
-        "Practice": "🧠 Practice",
-        "Mock Interview": "🎤 Mock Interview",
-        "MCQ Quiz": "📊 MCQ Quiz",
-        "Pseudocode": "📝 Pseudocode"
-    }
-    # Use descriptive name if in map, otherwise default
-    tab_names = [tab_name_map.get(s, f"📌 {s}") for s in all_sections]
-    
-    # Add permanent tabs
-    tab_names.extend(["📈 Results", "📊 Performance & Analytics", "🕓 History"])
-    
-    section_tabs = st.tabs(tab_names)
-
-    # ✅ CRITICAL FIX: Updated Section Generator
-    def setup_test(section_name, key_prefix):
-        """Creates the UI for starting a test for a given section."""
-        st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
-        
-        section_data = QUESTION_BANK.get(section_name, {})
-        if not section_data:
-            st.warning(f"No questions found for section '{section_name}' in the question bank.")
-            return
-
-        # THIS IS THE CRITICAL LOGIC:
-        # Check if the first level keys are difficulties, or topics.
-        first_level_keys = list(section_data.keys())
-        has_topics = True # Assume topics by default
-        if not first_level_keys:
-             st.error(f"No data for section: {section_name}")
-             return
-        
-        # If any of the first keys are 'Easy', 'Medium', or 'Hard', we assume NO topics.
-        if any(key in first_level_keys for key in ["Easy", "Medium", "Hard"]):
-            has_topics = False
-        
-        topic = None
-        topics_list = [] # This is the "array value to the topics"
-        if has_topics:
-            # This section (e.g., Practice) has topics
-            topics_list = first_level_keys # This is the "array of topics" [0, 1, ...]
-            if not topics_list:
-                st.error(f"No topics found for section: {section_name}")
-                return
-            # User selects from the array, Streamlit gives us the string
-            topic = st.selectbox("Select Topic", topics_list, key=f"{key_prefix}_topic")
-        else:
-            # This section (e.g., Pseudocode) doesn't have topics
-            pass 
-
-        # This part is now safe, it runs for both structures
-        difficulty_list = ["Easy", "Medium", "Hard"] # This is the "array for difficulty" [0, 1, 2]
-        # User selects from the array, Streamlit gives us the string
-        diff = st.selectbox("Difficulty", difficulty_list, key=f"{key_prefix}_diff")
-        count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
-        start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
-        
-        if start_btn:
-            # Fetch questions based on the selected array values (strings)
-            qs = pick_questions(section_name, topic, diff, count) 
-            
-            if not qs: # Check if pick_questions returned an empty list
-                st.error(f"No questions found for {section_name} -> {topic or 'General'} -> {diff}. Please check the question bank.")
-                return
-
-            st.session_state.exam = {
-                "section": section_name,
-                "topic": topic if topic else "General", # Store topic
-                "diff": diff,
-                "qs": qs,
-                "answers": [""] * len(qs),
-                "idx": 0,
-                "start": time.time()
-            }
-            st.session_state.mode = "exam"
-            st.experimental_rerun()
-
-    # ---------- Dynamically Create Tabs for Sections ----------
-    for i, section_name in enumerate(all_sections):
-        with section_tabs[i]:
-            # Use a unique key_prefix for each section
-            # section_name is the string from your "Section array"
-            setup_test(section_name, section_name.lower().replace(" ", "_") )
-
-    # ---------- Results ----------
-    with section_tabs[-3]: # Corresponds to "Results"
-        st.subheader("📈 Results")
-        h = load_history()
-        if not h:
-            st.info("No test results found.")
-        else:
-            df = pd.DataFrame(h)
-            df_display = df[["section", "timestamp", "score"]].copy()
-            
-            # Function to determine if a result was N/A
-            def check_na(row):
-                # Find the original record by index
-                original_record = h[row.name]
-                # Check if any detail has a score of 'N/A'
-                if any(d.get('score') == 'N/A' for d in original_record.get('details', [])):
-                    return "N/A (Review)"
-                return row['score']
-
-            df_display['score'] = df.apply(check_na, axis=1)
-            st.dataframe(df_display, use_container_width=True)
-
-    # ---------- Performance & Analytics ----------
-    with section_tabs[-2]: # Corresponds to "Performance"
-        st.subheader("📊 Performance & Analytics")
-        h = load_history()
-        if not h:
-            st.info("No test data to analyze.")
-        else:
-            df = pd.DataFrame(h)
-            if "score" in df.columns:
-                # Filter out non-numeric scores (e.g., N/A represented as 0) for plotting
-                df_numeric = df[pd.to_numeric(df['score'], errors='coerce').notnull()]
-                df_numeric['score'] = df_numeric['score'].astype(float)
-                
-                # Exclude sections that are always N/A (score=0 and details have 'N/A')
-                na_sections = set()
-                for i, rec in enumerate(h):
-                    if rec.get('score') == 0 and rec.get('details') and any(d.get('score') == 'N/A' for d in rec.get('details', [])):
-                        na_sections.add(rec['section'])
-                
-                df_plottable = df_numeric[~df_numeric['section'].isin(na_sections)]
-
-                if not df_plottable.empty:
-                    fig = px.bar(df_plottable, x="section", y="score", color="section", title="Score per Section (Graded Tests)", text_auto=True)
-                    st.plotly_chart(fig, use_container_width=True)
-                    
-                    avg_scores = df_plottable.groupby("section")["score"].mean().reset_index()
-                    fig2 = px.pie(avg_scores, names="section", values="score", title="Average Score Distribution (Graded Tests)")
-                    st.plotly_chart(fig2, use_container_width=True)
-                else:
-                    st.info("No auto-graded test data available to plot. (Mock Interviews are not auto-graded).")
-
-    # ---------- History ----------
-    with section_tabs[-1]: # Corresponds to "History"
-        st.subheader("🕓 History")
-        h = load_history()
-        if not h:
-            st.info("No history found.")
-        else:
-            for rec in h[::-1]: # Show newest first
-                score_display = rec.get('score', 'N/A')
-                if any(d.get('score') == 'N/A' for d in rec.get('details', [])):
-                    score_display = "N/A (Review)"
-
-                st.markdown(f"**Section:** {rec['section']} | **Timestamp:** {rec['timestamp']} | **Score:** {score_display}")
-                with st.expander("View Details", expanded=False):
-                    for d in rec.get("details", []):
-                        st.markdown(f"**Q:** {d['q']}")
-                        if 'selected' in d: # MCQ / Pseudocode
-                            st.markdown(f"  - *Your Answer:* `{d['selected']}`")
-                            st.markdown(f"  - *Correct Answer:* `{d['correct']}`")
-                            st.markdown(f"  - *Result:* **{'Correct' if d['score'] == 1 else 'Incorrect'}**")
-                        elif 'user_ans' in d: # Practice / Mock
-                            st.text_area("Your Answer", d['user_ans'], height=100, disabled=True, key=f"{rec['id']}_{d['q']}_user")
-                            if 'correct_ans' in d: # Practice (has a correct answer)
-                                st.text_area("Correct Answer", d['correct_ans'], height=50, disabled=True, key=f"{rec['id']}_{d['q']}_correct")
-                            st.markdown(f"  - *Score:* **{d.get('score', 'N/A')}**")
-                        st.divider()
+    with tab3:
+        st.subheader("💻 Code Completion")
+        st.write("Complete missing parts of code to make it functional.")
 
 # -------------------------------
-# EXAM PAGE
+# RESULTS SECTION
 # -------------------------------
-elif st.session_state.mode == "exam":
-    if "exam" not in st.session_state:
-        st.error("No active test found.")
-        if st.button("Return Home"):
-            st.session_state.mode = "main"
-            st.experimental_rerun()
-    else:
-        ex = st.session_state.exam
-        st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} (Topic: {ex['topic']}) — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
+elif main_section == "Results":
+    st.title("📈 Results")
+    tab1, tab2 = st.tabs(["Latest Result", "Overall Stats"])
 
-        # ----- Timer -----
-        total_time = 30 * 60 # 30 minutes
-        elapsed = int(time.time() - ex["start"])
-        remaining = max(total_time - elapsed, 0)
-        m, s = divmod(remaining, 60)
-        
-        timer_placeholder = st.empty()
-        if remaining <= 300: # 5 minutes
-            timer_placeholder.markdown(f"<h3 style='color:red;font-weight:bold;'>⚠️ Time Left: {m:02}:{s:02}</h3>", unsafe_allow_html=True)
-        else:
-            timer_placeholder.markdown(f"<h3 style='color:green;font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</h3>", unsafe_allow_html=True)
+    with tab1:
+        st.subheader("🏁 Latest Test Result")
+        st.write("Your most recent test performance details will appear here.")
 
-        # ✅ Updated Score Calculation
-        def calculate_and_save_results():
-            details = []
-            avg = 0
-            scores = []
-            
-            # Sections with simple, text-based answers (Practice)
-            if ex["section"] == "Practice":
-                scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"]) ]
-                avg = np.mean(scores) if scores else 0
-                details = [{"q": q["q"], "user_ans": a, "correct_ans": q["a"], "score": round(s, 2)} for a, q, s in zip(ex["answers"], ex["qs"], scores)]
-            
-            # Sections with multiple-choice answers (MCQ, Pseudocode)
-            elif ex["section"] in ["MCQ Quiz", "Pseudocode"]:
-                for a, q in zip(ex["answers"], ex["qs"]):
-                    s = 1 if str(a).strip() == str(q["a"]).strip() else 0 # Compare as strings
-                    scores.append(s)
-                    details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
-                # Score is total correct answers
-                avg = sum(scores) 
-            
-            # Sections with no auto-grading (Mock Interview)
-            else:
-                avg = 0 # Store as 0, but use 'N/A' in details
-                details = [{"q": q["q"], "user_ans": a, "score": "N/A"} for a, q in zip(ex["answers"], ex["qs"])]
-
-            record_result(ex["section"], avg, details)
-            st.success("Test Submitted Successfully!")
-            st.balloons()
-            del st.session_state.exam
-            st.session_state.mode = "main"
-            time.sleep(2) # Pause to show success
-            st.experimental_rerun()
-
-        # Auto-submit
-        if remaining == 0:
-            st.warning("⏰ Time over! Auto-submitting...")
-            time.sleep(2) # Give user time to see message
-            calculate_and_save_results()
-            st.experimental_rerun() # Ensure it reruns to go to main page
-
-        # Submit button
-        col1, col2 = st.columns([8, 1])
-        with col2:
-            if st.button("🏁 Submit Test"):
-                calculate_and_save_results()
-
-        # Question display
-        idx = ex["idx"]
-        q = ex["qs"][idx]
-        st.markdown(
-            f"<div style='background-color:#F0F8FF;color:#000000;padding:20px;border-radius:10px;margin-bottom:15px;font-size:18px;'><b>Q{idx+1}. {q['q']}</b></div>",
-            unsafe_allow_html=True
-        )
-
-        # Answer Input
-        if ex["section"] in ["MCQ Quiz", "Pseudocode"]:
-            options = q.get("options", [])
-            current_answer = ex["answers"][idx]
-            
-            # Normalize options and answer for comparison
-            normalized_options = [str(opt).strip() for opt in options]
-            normalized_answer = str(current_answer).strip()
-            
-            # Use the string from the options array to display
-            display_options = q.get("options", [])
-            
-            try:
-                default_index = normalized_options.index(normalized_answer)
-            except ValueError:
-                default_index = 0 # Default to first option if answer not set
-                if current_answer == "": # Set initial answer to first option
-                    ex["answers"][idx] = display_options[0] if display_options else ""
-            
-            # Use the original options (with formatting) for display
-            selected = st.radio("Select Option:", display_options, index=default_index, key=f"ans{idx}")
-            ex["answers"][idx] = selected
-
-        # All other sections (Practice, Mock Interview) use text_area
-        else:
-            ans = st.text_area("Your answer:", value=ex["answers"][idx], height=200, key=f"ans{idx}")
-            ex["answers"][idx] = ans
-
-        st.session_state.exam = ex
-
-        # Navigation Buttons
-        f1, f2, f3 = st.columns([1, 1, 1])
-        if f1.button("⬅ Previous"):
-            if idx > 0:
-                ex["idx"] -= 1
-                st.session_state.exam = ex
-                st.experimental_rerun()
-        if f2.button("Next ➡"):
-            if idx < len(ex["qs"]) - 1:
-                ex["idx"] += 1
-                st.session_state.exam = ex
-                st.experimental_rerun()
-        if f3.button("💾 Save Answer"):
-            # Answer is already saved on input change, this just provides user feedback
-            st.success("Answer saved ✅")
-
-        st.progress((idx + 1) / len(ex["qs"]))
-        st.caption(f"Question {idx+1}/{len(ex['qs'])}")
-
-        # Rerun to update timer
-        if remaining > 0:
-            time.sleep(1)
-            st.experimental_rerun()
+    with tab2:
+        st.subheader("📊 Overall Performance Statistics")
+        st.write("Summary of your scores and progress over time.")
 
 # -------------------------------
-# Footer
+# PERFORMANCE & ANALYTICS SECTION
 # -------------------------------
-st.markdown("<hr>", unsafe_allow_html=True)
-st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+elif main_section == "Performance & Analytics":
+    st.title("📊 Performance & Analytics")
+    tab1, tab2, tab3 = st.tabs(["Accuracy Graph", "Time Taken", "Topic Analysis"])
+
+    with tab1:
+        st.subheader("📈 Accuracy Over Time")
+        st.line_chart(pd.DataFrame(np.random.randn(10, 2), columns=["Accuracy", "Attempts"]))
+
+    with tab2:
+        st.subheader("⏱ Average Time Per Question")
+        st.bar_chart(pd.DataFrame(np.random.randint(10, 100, size=(5, 2)), columns=["Easy", "Hard"]))
+
+    with tab3:
+        st.subheader("📚 Topic-Wise Analysis")
+        st.write("Analyze your performance across different categories and difficulty levels.")
+
+# -------------------------------
+# HISTORY SECTION
+# -------------------------------
+elif main_section == "History":
+    st.title("🕓 Test History")
+    tab1, tab2 = st.tabs(["Previous Tests", "Score Summary"])
+
+    with tab1:
+        st.subheader("📘 Previous Test Records")
+        st.table(pd.DataFrame({
+            "Date": ["2025-10-01", "2025-10-10", "2025-10-20"],
+            "Section": ["MCQ Quiz", "Practice", "Mock Interview"],
+            "Score": [78, 85, 92]
+        }))
+
+    with tab2:
+        st.subheader("📄 Score Summary")
+        st.write("Overview of all past performance records for better tracking.")
