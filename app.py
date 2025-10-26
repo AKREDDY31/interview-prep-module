@@ -7,12 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import plotly.express as px
 
-# ---- Modern page styling ----
-st.set_page_config(
-    page_title="Interview Preparation Platform",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="Interview Preparation Platform", layout="wide", initial_sidebar_state="expanded")
 st.markdown("""
 <style>
 .big-title { text-align:center; color:#5612c6; font-weight:800; font-size:2.8rem; margin-top:24px; margin-bottom:8px; letter-spacing:0.03em;}
@@ -24,7 +19,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------------- Your QUESTION_BANK goes here! -------------------
 QUESTION_BANK ={
     "Practice": {
         "Aptitude": {
@@ -1235,12 +1229,8 @@ QUESTION_BANK ={
     ]
 }
 }
-
- # <-- Fill this dict with your questions
-
-TOPICS = {
-    k: list(v.keys()) for k, v in QUESTION_BANK.items() if isinstance(v, dict)
-}
+  # <-- Fill this dict with your questions
+TOPICS = {k: list(v.keys()) for k, v in QUESTION_BANK.items() if isinstance(v, dict)}
 
 def tfidf_similarity(a, b):
     if not a or not b or not a.strip() or not b.strip():
@@ -1310,11 +1300,8 @@ if "mode" not in st.session_state:
 if st.session_state.mode == "main":
     st.markdown("<div class='big-title'>Interview Preparation Platform</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>Interactive Interview Practice and Analytics Portal</div>", unsafe_allow_html=True)
-
-    section_tabs = st.tabs([
-        "🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💻 Code Runner", "📄 Pseudocode",
-        "📈 Results", "📊 Analytics", "🕓 History"
-    ])
+    section_tabs = st.tabs(["🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💻 Code Runner", "📄 Pseudocode",
+        "📈 Results", "📊 Analytics", "🕓 History"])
 
     with section_tabs[0]:
         if "Practice" in TOPICS and TOPICS["Practice"]:
@@ -1337,7 +1324,6 @@ if st.session_state.mode == "main":
                 st.stop()
         else:
             st.info("No topics available for Practice. Please fill the QUESTION_BANK.")
-
     with section_tabs[1]:
         if "Mock Interview" in TOPICS and TOPICS["Mock Interview"]:
             topic = st.selectbox("Interview Type", TOPICS["Mock Interview"], key="mock_type")
@@ -1359,7 +1345,6 @@ if st.session_state.mode == "main":
                 st.stop()
         else:
             st.info("No topics available for Mock Interview. Please fill the QUESTION_BANK.")
-
     with section_tabs[2]:
         if "MCQ Quiz" in TOPICS and TOPICS["MCQ Quiz"]:
             topic = st.selectbox("Quiz Topic", TOPICS["MCQ Quiz"], key="mcq_topic")
@@ -1381,7 +1366,6 @@ if st.session_state.mode == "main":
                 st.stop()
         else:
             st.info("No topics available for MCQ Quiz. Please fill the QUESTION_BANK.")
-
     with section_tabs[3]:
         if "Code Runner" in TOPICS and TOPICS["Code Runner"]:
             topic = TOPICS["Code Runner"][0]
@@ -1403,7 +1387,6 @@ if st.session_state.mode == "main":
                 st.stop()
         else:
             st.info("No questions available for Code Runner. Please fill the QUESTION_BANK.")
-
     with section_tabs[4]:
         if "Pseudocode" in TOPICS and TOPICS["Pseudocode"]:
             topic = TOPICS["Pseudocode"][0]
@@ -1426,7 +1409,6 @@ if st.session_state.mode == "main":
         else:
             st.info("No questions available for Pseudocode. Please fill the QUESTION_BANK.")
 
-    # ---------- Results ----------
     with section_tabs[5]:
         st.subheader("📈 Results")
         h = load_history()
@@ -1439,8 +1421,6 @@ if st.session_state.mode == "main":
                 st.dataframe(df[cols])
             else:
                 st.dataframe(df)
-
-    # ---------- Analytics ----------
     with section_tabs[6]:
         st.subheader("📊 Analytics")
         h = load_history()
@@ -1456,8 +1436,6 @@ if st.session_state.mode == "main":
                 st.plotly_chart(fig2, use_container_width=True)
             else:
                 st.info("Not enough result data for analytics.")
-
-    # ---------- History ----------
     with section_tabs[7]:
         st.subheader("🕓 History")
         h = load_history()
@@ -1481,7 +1459,6 @@ elif st.session_state.mode == "exam":
     else:
         st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
         total_time = 30 * 60
-
         elapsed = int(time.time() - ex["start"])
         remaining = max(total_time - elapsed, 0)
         m, s = divmod(remaining, 60)
@@ -1533,7 +1510,6 @@ elif st.session_state.mode == "exam":
             f"<div style='background-color:#f9f7ff;color:#1a0441;padding:22px 15px 16px 18px;border-radius:11px;margin-bottom:12px;font-size:17.5px;font-weight:500;'><b>Q{idx+1}. {q.get('q','')}</b></div>",
             unsafe_allow_html=True
         )
-
         if ex["section"] == "MCQ Quiz" or (ex["section"] == "Pseudocode" and 'options' in q):
             opts = q.get("options", [])
             selected = st.radio("Select Option:", opts, index=opts.index(ex["answers"][idx]) if ex["answers"][idx] in opts else 0, key=f"ans{idx}")
