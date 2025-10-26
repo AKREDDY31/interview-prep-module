@@ -26,8 +26,7 @@ QUESTION_FILE = "question_bank.json"
 # -------------------------------
 # Default Question Bank (WITH SAMPLE QUESTIONS)
 # -------------------------------
-# This is the sample data you requested.
-# The app will use this if 'question_bank.json' is missing or empty.
+# "Code Runner" has been removed as requested.
 DEFAULT_BANK = {
     "Practice": {
         "Aptitude": {
@@ -49,6 +48,14 @@ DEFAULT_BANK = {
             ]
         }
     },
+    "Mock Interview": {
+        "HR": {
+            "Easy": [
+                {"q": "Tell me about yourself.", "a": ""},
+                {"q": "What are your strengths?", "a": ""}
+            ]
+        }
+    },
     "MCQ Quiz": {
         "Data Structures": {
             "Easy": [
@@ -57,16 +64,17 @@ DEFAULT_BANK = {
             ]
         }
     },
-    "Code Runner": {
+    "Pseudocode": {
         "Easy": [
-            {"q": "Write a function to return the factorial of 5.", "a": ""},
-            {"q": "Write code to reverse a string 'hello'.", "a": ""}
-        ],
-        "Medium": [
-            {"q": "Check if 'racecar' is a palindrome.", "a": ""}
-        ],
-        "Hard": [
-             {"q": "Find the maximum subarray sum (Kadane's Algorithm).\nTest: [-2,1,-3,4,-1,2,1,-5,4] output=6", "a": ""}
+            {
+                "q": "Which pseudocode correctly sums first N natural numbers?",
+                "options": [
+                    "sum = 0; for i = 1 to N: sum = sum + i",
+                    "sum = 0; while i < N: sum = sum + i",
+                    "sum = N * N"
+                ],
+                "a": "sum = 0; for i = 1 to N: sum = sum + i"
+            }
         ]
     }
 }
@@ -196,12 +204,11 @@ if st.session_state.mode == "main":
     # Define all section tabs
     all_sections = list(QUESTION_BANK.keys()) # This is your Section array [0, 1, 2, ...]
     
-    # Create descriptive tab names
+    # Create descriptive tab names (REMOVED Code Runner)
     tab_name_map = {
         "Practice": "🧠 Practice",
         "Mock Interview": "🎤 Mock Interview",
         "MCQ Quiz": "📊 MCQ Quiz",
-        "Code Runner": "💻 Code Runner",
         "Pseudocode": "📝 Pseudocode"
     }
     # Use descriptive name if in map, otherwise default
@@ -245,7 +252,7 @@ if st.session_state.mode == "main":
             # User selects from the array, Streamlit gives us the string
             topic = st.selectbox("Select Topic", topics_list, key=f"{key_prefix}_topic")
         else:
-            # This section (e.g., Code Runner) doesn't have topics
+            # This section (e.g., Pseudocode) doesn't have topics
             pass 
 
         # This part is now safe, it runs for both structures
@@ -333,7 +340,7 @@ if st.session_state.mode == "main":
                     fig2 = px.pie(avg_scores, names="section", values="score", title="Average Score Distribution (Graded Tests)")
                     st.plotly_chart(fig2, use_container_width=True)
                 else:
-                    st.info("No auto-graded test data available to plot. (Mock Interviews and Code Runner are not auto-graded).")
+                    st.info("No auto-graded test data available to plot. (Mock Interviews are not auto-graded).")
 
     # ---------- History ----------
     with section_tabs[-1]: # Corresponds to "History"
@@ -355,7 +362,7 @@ if st.session_state.mode == "main":
                             st.markdown(f"  - *Your Answer:* `{d['selected']}`")
                             st.markdown(f"  - *Correct Answer:* `{d['correct']}`")
                             st.markdown(f"  - *Result:* **{'Correct' if d['score'] == 1 else 'Incorrect'}**")
-                        elif 'user_ans' in d: # Practice / Mock / Code
+                        elif 'user_ans' in d: # Practice / Mock
                             st.text_area("Your Answer", d['user_ans'], height=100, disabled=True, key=f"{rec['id']}_{d['q']}_user")
                             if 'correct_ans' in d: # Practice (has a correct answer)
                                 st.text_area("Correct Answer", d['correct_ans'], height=50, disabled=True, key=f"{rec['id']}_{d['q']}_correct")
@@ -408,7 +415,7 @@ elif st.session_state.mode == "exam":
                 # Score is total correct answers
                 avg = sum(scores) 
             
-            # Sections with no auto-grading (Mock Interview, Code Runner)
+            # Sections with no auto-grading (Mock Interview)
             else:
                 avg = 0 # Store as 0, but use 'N/A' in details
                 details = [{"q": q["q"], "user_ans": a, "score": "N/A"} for a, q in zip(ex["answers"], ex["qs"])]
@@ -465,10 +472,8 @@ elif st.session_state.mode == "exam":
             selected = st.radio("Select Option:", display_options, index=default_index, key=f"ans{idx}")
             ex["answers"][idx] = selected
 
-        elif ex["section"] == "Code Runner":
-            ans = st.text_area("Write code here:", value=ex["answers"][idx], height=250, key=f"ans{idx}")
-            ex["answers"][idx] = ans
-        else: # Practice, Mock Interview
+        # All other sections (Practice, Mock Interview) use text_area
+        else:
             ans = st.text_area("Your answer:", value=ex["answers"][idx], height=200, key=f"ans{idx}")
             ex["answers"][idx] = ans
 
