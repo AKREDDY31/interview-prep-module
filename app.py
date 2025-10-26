@@ -16,8 +16,6 @@ st.set_page_config(
 
 # ------------------------------- Files -------------------------------
 HISTORY_FILE = "history.json"
-
-# ------------------------------- Default Question Bank -------------------------------
 DEFAULT_BANK ={
     "Practice": {
         "Aptitude": {
@@ -1228,7 +1226,8 @@ DEFAULT_BANK ={
     ]
 }
 }
- # <<---- <- DEFINE THIS, FILL LATER!
+
+  # Fill this with your default questions or leave as {}
 
 # ------------------------------- Load Question Bank -------------------------------
 try:
@@ -1386,10 +1385,11 @@ elif st.session_state.mode == "exam":
         remaining = max(total_time - elapsed, 0)
         m, s = divmod(remaining, 60)
 
+        timer_placeholder = st.empty()
         if remaining <= 300:
-            st.markdown(f"<span style='color:red;font-weight:bold;'>⚠️ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
+            timer_placeholder.markdown(f"<span style='color:red;font-weight:bold;'>⚠️ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
         else:
-            st.markdown(f"<span style='color:green;font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
+            timer_placeholder.markdown(f"<span style='color:green;font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
 
         def calculate_and_save_results():
             details = []
@@ -1462,8 +1462,9 @@ elif st.session_state.mode == "exam":
         st.progress((idx + 1) / len(ex["qs"]))
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
 
-        time.sleep(1)
+        # CRITICAL: TIMER LOOP FOR AUTOTICK
         st.experimental_rerun()
         st.stop()
 
+# ------------------------------- Footer -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
