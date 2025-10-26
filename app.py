@@ -15,46 +15,12 @@ st.set_page_config(
 )
 st.markdown("""
 <style>
-.big-title {
-    text-align:center;
-    color:#5612c6;
-    font-weight:800;
-    font-size:2.8rem;
-    margin-top:24px;
-    margin-bottom:8px;
-    letter-spacing: 0.03em;
-}
-.subtitle {
-    text-align:center;
-    color:#444B5A;
-    font-size:1.2rem;
-    margin-bottom:22px;
-}
-.cardy {
-    background: linear-gradient(120deg,#f3f5fa 60%, #e4e6fb 100%);
-    border-left: 6px solid #5b21b6;
-    border-radius: 16px;
-    box-shadow: 0 2px 18px #2222;
-    padding: 28px 18px 18px 26px;
-    margin-bottom: 26px;
-}
-.cardy-title {
-    font-size:1.23rem;
-    font-weight:800;
-    color:#7c3aed;
-    margin-bottom:16px;
-}
-.cardy-li {
-    font-size:1.06rem;
-    color:#333;
-    margin-bottom:7px !important;
-    line-height:1.57em !important;
-}
-@media (max-width: 800px) {
-    .big-title { font-size:2rem; }
-    .subtitle { font-size:1.01rem; }
-    .cardy { padding: 18px 10px 12px 12px; }
-}
+.big-title { text-align:center; color:#5612c6; font-weight:800; font-size:2.8rem; margin-top:24px; margin-bottom:8px; letter-spacing: 0.03em;}
+.subtitle { text-align:center; color:#444B5A; font-size:1.2rem; margin-bottom:22px;}
+.cardy { background: linear-gradient(120deg,#f3f5fa 60%, #e4e6fb 100%); border-left: 6px solid #5b21b6; border-radius: 16px; box-shadow: 0 2px 18px #2222; padding: 28px 18px 18px 26px; margin-bottom: 26px;}
+.cardy-title { font-size:1.23rem; font-weight:800; color:#7c3aed; margin-bottom:16px;}
+.cardy-li { font-size:1.06rem; color:#333; margin-bottom:7px !important; line-height:1.57em !important;}
+@media (max-width: 800px) { .big-title { font-size:2rem; } .subtitle { font-size:1.01rem; } .cardy { padding: 18px 10px 12px 12px;}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -1269,7 +1235,8 @@ QUESTION_BANK ={
     ]
 }
 }
-# ------------------------------------------------------------------------
+
+ # <-- Fill this dict with your questions
 
 TOPICS = {
     k: list(v.keys()) for k, v in QUESTION_BANK.items() if isinstance(v, dict)
@@ -1282,7 +1249,7 @@ def tfidf_similarity(a, b):
         v = TfidfVectorizer()
         tfidf = v.fit_transform([a, b])
         sim = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
-        return round(min(sim * 100, 100), 2)  # cap at 100
+        return round(min(sim * 100, 100), 2)
     except:
         return 0.0
 
@@ -1505,6 +1472,7 @@ elif st.session_state.mode == "exam":
         if st.button("Return Home"):
             st.session_state.mode = "main"
             st.experimental_rerun()
+        st.stop()
     else:
         st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
         total_time = 30 * 60
@@ -1522,6 +1490,7 @@ elif st.session_state.mode == "exam":
         if remaining > 0:
             time.sleep(1)
             st.experimental_rerun()
+            st.stop()
         else:
             st.warning("⏰ Time over! Submitting...")
             details = []
@@ -1547,38 +1516,11 @@ elif st.session_state.mode == "exam":
                 avg = 0
                 details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
             record_result(ex["section"], ex.get("topic",""), avg, details)
-            del st.session_state.exam
+            if "exam" in st.session_state:
+                del st.session_state.exam
             st.session_state.mode = "main"
             st.experimental_rerun()
-
-        with colT2:
-            if st.button("🏁 Submit Test"):
-                details = []
-                if ex["section"] in ["Practice"]:
-                    scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
-                    avg = np.mean(scores) if scores else 0
-                    details = [{"q": q["q"], "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
-                elif ex["section"] == "MCQ Quiz":
-                    scores = []
-                    for a, q in zip(ex["answers"], ex["qs"]):
-                        s = 1 if a == q["a"] else 0
-                        scores.append(s)
-                        details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
-                    avg = sum(scores)
-                elif ex["section"] in ["Mock Interview","Pseudocode","Code Runner"]:
-                    scores = []
-                    for a, q in zip(ex["answers"], ex["qs"]):
-                        s = tfidf_similarity(a, q["a"]) if ex["section"] != "Mock Interview" else 0.0
-                        scores.append(s)
-                        details.append({"q": q["q"], "answer": a, "score": s})
-                    avg = np.mean(scores) if scores else 0
-                else:
-                    avg = 0
-                    details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
-                record_result(ex["section"], ex.get("topic",""), avg, details)
-                del st.session_state.exam
-                st.session_state.mode = "main"
-                st.experimental_rerun()
+            st.stop()
 
         idx = ex["idx"]
         q = ex["qs"][idx]
@@ -1587,7 +1529,6 @@ elif st.session_state.mode == "exam":
             unsafe_allow_html=True
         )
 
-        # Dynamic question rendering for MCQs/Pseudocode MCQs
         if ex["section"] == "MCQ Quiz" or (ex["section"] == "Pseudocode" and 'options' in q):
             opts = q.get("options", [])
             selected = st.radio("Select Option:", opts, index=opts.index(ex["answers"][idx]) if ex["answers"][idx] in opts else 0, key=f"ans{idx}")
@@ -1609,11 +1550,13 @@ elif st.session_state.mode == "exam":
                 ex["idx"] -= 1
                 st.session_state.exam = ex
                 st.experimental_rerun()
+                st.stop()
         if f2.button("Next ➡"):
             if idx < len(ex["qs"]) - 1:
                 ex["idx"] += 1
                 st.session_state.exam = ex
                 st.experimental_rerun()
+                st.stop()
         if f3.button("💾 Save Answer"):
             st.success("Answer saved ✅")
 
