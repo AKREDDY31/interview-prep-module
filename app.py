@@ -60,8 +60,7 @@ st.markdown("""
 
 # ---------------------- Your QUESTION_BANK goes here! -------------------
 # Fill/replace THIS dict and keep the rest of the code as per your requirements.
-QUESTION_BANK = 
-{
+QUESTION_BANK ={
     "Practice": {
         "Aptitude": {
             "Easy": [
@@ -222,52 +221,6 @@ QUESTION_BANK =
                 {"q":"If book's price rises from ₹200 to ₹220, percentage increase?", "a":"10%"},
             ]
         }
-    },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   "MCQ Quiz": {
     "Python": {
         "Easy": [
             {"q": "What does print(2**3) output?", "options": ["5", "6", "8", "9"], "a": "8"},
@@ -376,14 +329,6 @@ QUESTION_BANK =
         ]
     }
 },
-
-
-
-
-
-
-
-
 "Mock Interview": {
     "Technical": {
         "Easy": [
@@ -598,11 +543,6 @@ QUESTION_BANK =
         ]
     }
 },
-
-
-
-
-
 "Code Runner": {
     "Easy": [
         {"q": "Write a function to return the factorial of a number n.\nTest Case 1: n=5, output=120\nTest Case 2: n=1, output=1", "a": ""},
@@ -656,14 +596,6 @@ QUESTION_BANK =
         {"q": "Find all palindrome substrings in a string.", "a": ""}
     ]
 },
-
-
-
-
-
-
-
-
 "Pseudocode": {
     "Easy": [
         {
@@ -1117,6 +1049,7 @@ QUESTION_BANK =
         }
     ]
 }
+}
 # ------------------------------------------------------------------------
 
 TOPICS = {
@@ -1481,3 +1414,4 @@ elif st.session_state.mode == "exam":
 
 # --- Footer ---
 st.markdown("<div style='text-align:center;padding:10px;color:#5612c6;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+
