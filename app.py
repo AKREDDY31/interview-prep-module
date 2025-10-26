@@ -1,174 +1,179 @@
-# app.py
 import streamlit as st
 import pandas as pd
 import numpy as np
-from datetime import datetime
 
-# -------------------------------
-# Page Configuration
-# -------------------------------
+# --------------------------------------------------
+# ⚙️ App Configuration
+# --------------------------------------------------
 st.set_page_config(
     page_title="AI Interview Preparation Platform",
     layout="wide",
-    initial_sidebar_state="expanded",
+    page_icon="🧠",
 )
 
+# --------------------------------------------------
+# 🌈 Custom Styling for a Modern Look
+# --------------------------------------------------
 st.markdown("""
     <style>
-        .main {
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
-        .stTabs [role="tablist"] {
-            justify-content: center;
-        }
-        .stTabs [role="tab"] {
-            padding: 10px 25px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 10px;
-        }
-        .stTabs [role="tab"][aria-selected="true"] {
-            background-color: #2e7d32;
-            color: white;
-        }
+    body {background-color: #f5f7fa;}
+    .main {padding: 1rem 2rem;}
+    h1, h2, h3 {color: #2b6777 !important;}
+    .stTabs [role="tablist"] {justify-content: center;}
+    .stTabs [role="tab"] {
+        font-size: 17px !important;
+        font-weight: 600;
+        color: #2b6777;
+        padding: 10px 24px;
+        border-radius: 10px;
+    }
+    .stTabs [role="tab"][aria-selected="true"] {
+        background-color: #2b6777;
+        color: white !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# -------------------------------
-# Sidebar Navigation
-# -------------------------------
+# --------------------------------------------------
+# 🧭 Sidebar Navigation
+# --------------------------------------------------
 st.sidebar.title("📚 Navigation")
-main_section = st.sidebar.radio(
-    "Go to:",
+menu = st.sidebar.radio(
+    "Choose Section",
     ["Practice", "Mock Interview", "MCQ Quiz", "Pseudocode", "Results", "Performance & Analytics", "History"]
 )
 
-# -------------------------------
-# PRACTICE SECTION
-# -------------------------------
-if main_section == "Practice":
-    st.title("🧠 Practice Section")
-    tab1, tab2, tab3, tab4 = st.tabs(["Data Structures", "Algorithms", "Python", "Aptitude"])
+# --------------------------------------------------
+# 🧠 PRACTICE
+# --------------------------------------------------
+if menu == "Practice":
+    st.title("🧠 Practice")
+    tabs = st.tabs(["Data Structures", "Algorithms", "Python", "Aptitude"])
 
-    with tab1:
-        st.subheader("📘 Data Structures Practice")
-        st.write("Work on common problems like arrays, linked lists, stacks, and queues.")
+    with tabs[0]:
+        st.subheader("📘 Data Structures")
+        st.info("Practice problems on Arrays, Linked Lists, Stacks, Queues, Trees, and Graphs.")
 
-    with tab2:
-        st.subheader("📗 Algorithms Practice")
-        st.write("Solve sorting, searching, and optimization algorithm challenges.")
+    with tabs[1]:
+        st.subheader("📗 Algorithms")
+        st.info("Work on Sorting, Searching, Dynamic Programming, and Greedy problems.")
 
-    with tab3:
-        st.subheader("🐍 Python Practice")
-        st.write("Sharpen your Python fundamentals and syntax through hands-on exercises.")
+    with tabs[2]:
+        st.subheader("🐍 Python")
+        st.info("Strengthen Python concepts — functions, loops, OOP, and error handling.")
 
-    with tab4:
-        st.subheader("🧮 Aptitude Practice")
-        st.write("Test your mathematical and logical reasoning skills.")
+    with tabs[3]:
+        st.subheader("🧮 Aptitude")
+        st.info("Sharpen your logical and mathematical reasoning skills.")
 
-# -------------------------------
-# MOCK INTERVIEW SECTION
-# -------------------------------
-elif main_section == "Mock Interview":
-    st.title("🎤 Mock Interview Section")
-    tab1, tab2 = st.tabs(["HR Round", "Technical Round"])
 
-    with tab1:
-        st.subheader("💬 HR Interview Simulation")
-        st.write("Practice common HR questions to boost your confidence.")
+# --------------------------------------------------
+# 🎤 MOCK INTERVIEW
+# --------------------------------------------------
+elif menu == "Mock Interview":
+    st.title("🎤 Mock Interview")
+    tabs = st.tabs(["HR Round", "Technical Round"])
 
-    with tab2:
-        st.subheader("🖥 Technical Interview Simulation")
-        st.write("Get technical questions from different domains to test your preparation.")
+    with tabs[0]:
+        st.subheader("💬 HR Round")
+        st.success("Simulate HR interview questions to improve your communication skills.")
 
-# -------------------------------
-# MCQ QUIZ SECTION
-# -------------------------------
-elif main_section == "MCQ Quiz":
-    st.title("🧩 MCQ Quiz Section")
-    tab1, tab2, tab3 = st.tabs(["Easy", "Medium", "Hard"])
+    with tabs[1]:
+        st.subheader("🖥 Technical Round")
+        st.success("Answer real-world technical questions to simulate an interview environment.")
 
-    with tab1:
-        st.subheader("🟢 Easy Quiz")
-        st.write("Start with basic level questions to warm up.")
 
-    with tab2:
-        st.subheader("🟠 Medium Quiz")
-        st.write("Try intermediate-level challenges to test your skills.")
+# --------------------------------------------------
+# 🧩 MCQ QUIZ
+# --------------------------------------------------
+elif menu == "MCQ Quiz":
+    st.title("🧩 MCQ Quiz")
+    tabs = st.tabs(["Easy", "Medium", "Hard"])
 
-    with tab3:
-        st.subheader("🔴 Hard Quiz")
-        st.write("Attempt advanced and tricky questions for experts.")
+    for level, emoji in zip(["Easy", "Medium", "Hard"], ["🟢", "🟠", "🔴"]):
+        with tabs[["Easy", "Medium", "Hard"].index(level)]:
+            st.subheader(f"{emoji} {level} Level")
+            st.info(f"Take a {level.lower()} level MCQ quiz to assess your understanding.")
 
-# -------------------------------
-# PSEUDOCODE SECTION
-# -------------------------------
-elif main_section == "Pseudocode":
-    st.title("📜 Pseudocode Section")
-    tab1, tab2, tab3 = st.tabs(["Logical Flow", "Output Prediction", "Code Completion"])
 
-    with tab1:
-        st.subheader("🧠 Logical Flow Problems")
-        st.write("Understand the control flow and structure of code logic.")
+# --------------------------------------------------
+# 📜 PSEUDOCODE
+# --------------------------------------------------
+elif menu == "Pseudocode":
+    st.title("📜 Pseudocode")
+    tabs = st.tabs(["Logical Flow", "Output Prediction", "Code Completion"])
 
-    with tab2:
+    with tabs[0]:
+        st.subheader("🧠 Logical Flow")
+        st.info("Understand how control structures and loops form the logical flow.")
+
+    with tabs[1]:
         st.subheader("🔍 Output Prediction")
-        st.write("Guess the output of given code snippets to improve logical reasoning.")
+        st.info("Predict the outputs of given code snippets to test understanding.")
 
-    with tab3:
+    with tabs[2]:
         st.subheader("💻 Code Completion")
-        st.write("Complete missing parts of code to make it functional.")
+        st.info("Fill in missing parts of pseudocode to make it functional.")
 
-# -------------------------------
-# RESULTS SECTION
-# -------------------------------
-elif main_section == "Results":
+
+# --------------------------------------------------
+# 📈 RESULTS
+# --------------------------------------------------
+elif menu == "Results":
     st.title("📈 Results")
-    tab1, tab2 = st.tabs(["Latest Result", "Overall Stats"])
+    tabs = st.tabs(["Latest Result", "Overall Stats"])
 
-    with tab1:
+    with tabs[0]:
         st.subheader("🏁 Latest Test Result")
-        st.write("Your most recent test performance details will appear here.")
+        st.metric("Latest Score", "89%", "↑ 4% since last test")
 
-    with tab2:
-        st.subheader("📊 Overall Performance Statistics")
-        st.write("Summary of your scores and progress over time.")
+    with tabs[1]:
+        st.subheader("📊 Overall Stats")
+        st.bar_chart(pd.DataFrame({
+            "Section": ["Practice", "MCQ", "Mock", "Pseudocode"],
+            "Score": [85, 90, 78, 88]
+        }).set_index("Section"))
 
-# -------------------------------
-# PERFORMANCE & ANALYTICS SECTION
-# -------------------------------
-elif main_section == "Performance & Analytics":
-    st.title("📊 Performance & Analytics")
-    tab1, tab2, tab3 = st.tabs(["Accuracy Graph", "Time Taken", "Topic Analysis"])
 
-    with tab1:
+# --------------------------------------------------
+# 📉 PERFORMANCE & ANALYTICS
+# --------------------------------------------------
+elif menu == "Performance & Analytics":
+    st.title("📉 Performance & Analytics")
+    tabs = st.tabs(["Accuracy Graph", "Time Taken", "Topic Analysis"])
+
+    with tabs[0]:
         st.subheader("📈 Accuracy Over Time")
-        st.line_chart(pd.DataFrame(np.random.randn(10, 2), columns=["Accuracy", "Attempts"]))
+        st.line_chart(pd.DataFrame(np.random.randint(70, 100, (10, 1)), columns=["Accuracy"]))
 
-    with tab2:
-        st.subheader("⏱ Average Time Per Question")
-        st.bar_chart(pd.DataFrame(np.random.randint(10, 100, size=(5, 2)), columns=["Easy", "Hard"]))
+    with tabs[1]:
+        st.subheader("⏱ Time Taken per Question")
+        st.bar_chart(pd.DataFrame(np.random.randint(5, 30, (5, 1)), columns=["Seconds"]))
 
-    with tab3:
-        st.subheader("📚 Topic-Wise Analysis")
-        st.write("Analyze your performance across different categories and difficulty levels.")
-
-# -------------------------------
-# HISTORY SECTION
-# -------------------------------
-elif main_section == "History":
-    st.title("🕓 Test History")
-    tab1, tab2 = st.tabs(["Previous Tests", "Score Summary"])
-
-    with tab1:
-        st.subheader("📘 Previous Test Records")
-        st.table(pd.DataFrame({
-            "Date": ["2025-10-01", "2025-10-10", "2025-10-20"],
-            "Section": ["MCQ Quiz", "Practice", "Mock Interview"],
-            "Score": [78, 85, 92]
+    with tabs[2]:
+        st.subheader("📚 Topic Analysis")
+        st.dataframe(pd.DataFrame({
+            "Topic": ["Python", "DS", "Algo", "Aptitude"],
+            "Correct": [45, 38, 50, 40],
+            "Total": [50, 45, 60, 50]
         }))
 
-    with tab2:
-        st.subheader("📄 Score Summary")
-        st.write("Overview of all past performance records for better tracking.")
+
+# --------------------------------------------------
+# 🕓 HISTORY
+# --------------------------------------------------
+elif menu == "History":
+    st.title("🕓 History")
+    tabs = st.tabs(["Previous Tests", "Score Summary"])
+
+    with tabs[0]:
+        st.subheader("📘 Previous Tests")
+        st.table(pd.DataFrame({
+            "Date": ["2025-10-10", "2025-10-15", "2025-10-22"],
+            "Section": ["Practice", "Mock Interview", "MCQ Quiz"],
+            "Score (%)": [85, 78, 92]
+        }))
+
+    with tabs[1]:
+        st.subheader("📄 Summary")
+        st.metric("Average Score", "85%", "↑ 3% Overall Improvement")
