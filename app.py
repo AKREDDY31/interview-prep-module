@@ -11,50 +11,6 @@ st.set_page_config(page_title="Interview Preparation Platform",
                    initial_sidebar_state="expanded")
 
 # ---------------------------
-# Sidebar Instructions
-# ---------------------------
-st.sidebar.header("Instructions")
-st.sidebar.markdown("""
-- Select a section and difficulty, then click **Start Test**.
-- During the exam, only the exam page is visible (focus mode).
-- Use **Save & Next** to store your answer and move forward.
-- Timer counts down live, second by second.
-- Do not refresh the page while an attempt is active.
-""")
-
-# ---------------------------
-# History helpers
-# ---------------------------
-HISTORY_FILE = "history.json"
-
-def load_history():
-    if os.path.exists(HISTORY_FILE):
-        try:
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
-            return []
-    return []
-
-def save_history(history):
-    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(history, f, indent=2, default=str)
-
-def append_history(record):
-    hist = load_history()
-    hist.append(record)
-    save_history(hist)
-
-# ---------------------------
-# Utility helpers
-# ---------------------------
-def normalize_text(x):
-    return str(x).strip().casefold() if x else ""
-
-def is_correct(user_ans, correct_ans):
-    return normalize_text(user_ans) == normalize_text(correct_ans)
-
-# ---------------------------
 # Placeholder Question Bank
 # ---------------------------
 DEFAULT_BANK = {
@@ -271,6 +227,51 @@ DEFAULT_BANK = {
         ]
      }   
 }
+
+# ---------------------------
+# Sidebar Instructions
+# ---------------------------
+st.sidebar.header("Instructions")
+st.sidebar.markdown("""
+- Select a section and difficulty, then click **Start Test**.
+- During the exam, only the exam page is visible (focus mode).
+- Use **Save & Next** to store your answer and move forward.
+- Timer counts down live, second by second.
+- Do not refresh the page while an attempt is active.
+""")
+
+# ---------------------------
+# History helpers
+# ---------------------------
+HISTORY_FILE = "history.json"
+
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        try:
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def save_history(history):
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2, default=str)
+
+def append_history(record):
+    hist = load_history()
+    hist.append(record)
+    save_history(hist)
+
+# ---------------------------
+# Utility helpers
+# ---------------------------
+def normalize_text(x):
+    return str(x).strip().casefold() if x else ""
+
+def is_correct(user_ans, correct_ans):
+    return normalize_text(user_ans) == normalize_text(correct_ans)
+
 # ---------------------------
 # CSS for UI
 # ---------------------------
@@ -355,7 +356,7 @@ def render_section_ui(section):
         if st.button("▶ Start Test", key=f"{section}_start"):
             start_exam(section, level, count)
     st.write("---")
-    st.write("Tips: Use the navigation button during the test. Do not refresh the page while an attempt is active.")
+    st.write("Tips: Use the **Save & Next** button during the test. Do not refresh the page while an attempt is active.")
 
 # ---------------------------
 # Tabs for sections
@@ -373,7 +374,81 @@ if not st.session_state.exam:
     render_section_ui("Pseudocode")
 
 # ---------------------------
+# Exam Rendering
+# ---------------------------
+if st.session_state.exam:
+    ex = st.session_state.exam
+    st.markdown(f"<div style='padding:10px;border-radius:8px;background:#eef7ff'><b>Exam in progress:</b> {ex['section']} — {ex['difficulty']}</div>", unsafe_allow_html=True)
+
+    # Timer
+    elapsed = int(time.time() - ex["start_time"])
+    remaining = max(ex["duration"] - elapsed, 0)
+    m, s = divmod(remaining, 60)
+    st.markdown(f"<h3 style='color:#d62828'>⏱ Time left: {m:02}:{s:02}</h3>", unsafe_allow_html=True)
+
+    # Auto submit when time's up
+    if remaining == 0:
+        st.warning("Time's up — auto-submitting your answers.")
+        submit_now = True
+    else:
+        submit_now = False
+
+    # Question display
+    idx = ex["idx"]
+    q = ex["qs"][idx]
+    st.markdown(f"<div class='q-card'><b>Q{idx+1}. {q['q']}</b></div>", unsafe_allow_html=True)
+
+    user_key = f"answer_{idx}"
+    if "options" in q and q["options"]:
+        choice = st.radio("Choose an option:", q["options"], index=(q["options"].index(ex["answers"][idx]) if ex["answers"][idx] in q["options"] else 0), key=user_key)
+        ex["answers"][idx] = choice
+    else:
+        ans = st.text_area("Your answer:", value=ex["answers"][idx], key=user_key, height=140)
+        ex["answers"][idx] = ans
+
+    # Save & Next
+    if st.button("💾 Save & Next"):
+        if idx < len(ex["qs"]) - 1:
+            ex["idx"] += 1
+            st.session_state.exam = ex
+            st.experimental_rerun()
+        else:
+            submit_now = True
+
+    # Submission logic
+    if submit_now:
+        correct_count = 0
+        details = []
+        for i_q, qobj in enumerate(ex["qs"]):
+            user_ans = ex["answers"][i_q]
+            correct_ans = qobj.get("a", "")
+            correct = is_correct(user_ans, correct_ans)
+            details.append({
+                "q": qobj.get("q"),
+                "selected": user_ans,
+                "correct": correct_ans,
+                "score": 1 if correct else 0
+            })
+            if correct:
+                correct_count += 1
+
+        score = correct_count
+        rec = {
+            "id": str(uuid.uuid4()),
+            "section": ex["section"],
+            "difficulty": ex["difficulty"],
+            "timestamp": datetime.utcnow().isoformat(),
+            "score": score,
+            "details": details
+        }
+        append_history(rec)
+        st.success(f"Submitted ✅ — Score: {score} / {len(ex['qs'])}")
+        if score == len(ex['qs']):
+            st.balloons()
+        st.session_state.exam = None
+        st.experimental_rerun()
+
+# ---------------------------
 # Footer
 # ---------------------------
 st.markdown("<div style='text-align:center;padding:8px;color:#0b4f6c;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
-
