@@ -1226,8 +1226,7 @@ DEFAULT_BANK ={
     ]
 }
 }
-
- # Fill this with your default questions or leave as {}
+# Fill this with your default questions or leave as {}
 
 # ------------------------------- Load Question Bank -------------------------------
 try:
@@ -1425,7 +1424,22 @@ elif st.session_state.mode == "exam":
                 st.stop()
 
         idx = ex["idx"]
+        total_questions = len(ex["qs"])
+        if idx < 0:
+            idx = 0
+            ex["idx"] = 0
+        elif idx >= total_questions:
+            idx = total_questions - 1
+            ex["idx"] = idx
+        if total_questions == 0:
+            st.warning("No questions available for this test.")
+            if st.button("Return Home"):
+                st.session_state.mode = "main"
+                st.rerun()
+                st.stop()
+            st.stop()
         q = ex["qs"][idx]
+
         st.markdown(
             f"<div style='background-color:#F0F8FF;color:#000000;padding:20px;border-radius:10px;margin-bottom:15px;font-size:18px;'><b>Q{idx+1}. {q['q']}</b></div>",
             unsafe_allow_html=True
