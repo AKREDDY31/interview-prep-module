@@ -16,7 +16,9 @@ st.set_page_config(
 
 # ------------------------------- Files -------------------------------
 HISTORY_FILE = "history.json"
-DEFAULT_BANK ={
+
+# QUESTION_BANK = {...}  # <---- Fill this dictionary with your data structure
+QUESTION_BANK ={
     "Practice": {
         "Aptitude": {
             "Easy": [
@@ -1226,17 +1228,15 @@ DEFAULT_BANK ={
     ]
 }
 }
-# Fill this with your default questions or leave as {}
-
 # ------------------------------- Load Question Bank -------------------------------
 try:
     if os.path.exists("question_bank.json"):
         with open("question_bank.json", "r", encoding="utf-8") as f:
             QUESTION_BANK = json.load(f)
     else:
-        QUESTION_BANK = DEFAULT_BANK
+        QUESTION_BANK = {}  # Should be filled manually for now
 except:
-    QUESTION_BANK = DEFAULT_BANK
+    QUESTION_BANK = {}
 
 # ------------------------------- Helper Functions -------------------------------
 def tfidf_similarity(a, b):
@@ -1250,8 +1250,8 @@ def tfidf_similarity(a, b):
     except ValueError:
         return 0.0
 
-def pick_questions(section, difficulty, count):
-    pool = QUESTION_BANK.get(section, {}).get(difficulty, []).copy()
+def pick_questions(section, topic, difficulty, count):
+    pool = QUESTION_BANK.get(section, {}).get(topic, {}).get(difficulty, []).copy()
     random.shuffle(pool)
     while len(pool) < count and pool:
         pool.append(random.choice(pool))
@@ -1268,11 +1268,13 @@ def save_history(data):
     with open(HISTORY_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, default=str)
 
-def record_result(section, score, details):
+def record_result(section, topic, diff, score, details):
     h = load_history()
     h.append({
         "id": str(uuid.uuid4()),
         "section": section,
+        "topic": topic,
+        "difficulty": diff,
         "timestamp": datetime.utcnow().isoformat(),
         "score": round(float(score), 2) if score is not None else 0,
         "details": details
@@ -1282,7 +1284,7 @@ def record_result(section, score, details):
 # ------------------------------- Sidebar Instructions -------------------------------
 st.sidebar.title("🧭 Instructions & Tips")
 st.sidebar.markdown("""
-1. Select Section & Difficulty, click **Start Test**.
+1. Select Section, Topic & Difficulty, click **Start Test**.
 2. Timer starts when test begins.
 3. Don’t switch tabs.
 4. Use Previous | Next | Save Answer.
@@ -1295,95 +1297,108 @@ if "mode" not in st.session_state:
     st.session_state.mode = "main"
 
 # ------------------------------- MAIN PAGE -------------------------------
+def setup_test(section_name, key_prefix):
+    st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
+    topics = list(QUESTION_BANK.get(section_name, {}).keys())
+    if not topics:
+        st.warning(f"No topics found for section {section_name} in question bank.")
+        return
+    selected_topic = st.selectbox("Select Topic", topics, key=f"{key_prefix}_topic")
+    difficulties = list(QUESTION_BANK.get(section_name, {}).get(selected_topic, {}).keys())
+    if not difficulties:
+        st.warning(f"No difficulties found for topic {selected_topic} in section {section_name}.")
+        return
+    selected_diff = st.selectbox("Difficulty", difficulties, key=f"{key_prefix}_diff")
+    count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
+    start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
+    if start_btn:
+        qs = pick_questions(section_name, selected_topic, selected_diff, count)
+        st.session_state.exam = {
+            "section": section_name,
+            "topic": selected_topic,
+            "diff": selected_diff,
+            "qs": qs,
+            "answers": [""] * len(qs),
+            "idx": 0,
+            "start": time.time()
+        }
+        st.session_state.mode = "exam"
+        st.rerun()
+        st.stop()
+
 if st.session_state.mode == "main":
     st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
     st.write("Interactive Interview Practice and Analytics Portal")
 
-    section_tabs = st.tabs([
-        "🧠 Practice", "🎤 Mock Interview", "MCQ Quiz", "💻 Code Runner", "📝 Pseudocode",
-        "📈 Results", "📊 Performance & Analytics", "🕓 History"
-    ])
+    section_list = list(QUESTION_BANK.keys())
+    if not section_list:
+        section_list = ["Practice", "Mock Interview", "MCQ Quiz", "Code Runner", "Pseudocode"]
+    section_tabs = st.tabs(section_list + ["📈 Results", "📊 Performance & Analytics", "🕓 History"])
 
-    def setup_test(section_name, key_prefix):
-        st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
-        topic = st.selectbox("Select Topic", ["Practice"], key=f"{key_prefix}_topic")
-        diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key=f"{key_prefix}_diff")
-        count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
-        start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
-        if start_btn:
-            qs = pick_questions(section_name, diff, count)
-            st.session_state.exam = {
-                "section": section_name,
-                "topics": [topic],
-                "diff": diff,
-                "qs": qs,
-                "answers": [""] * len(qs),
-                "idx": 0,
-                "start": time.time()
-            }
-            st.session_state.mode = "exam"
-            st.rerun()
-            st.stop()
+    # Setup one tab for each dynamic section found in QUESTION_BANK
+    for idx, section_name in enumerate(section_list):
+        with section_tabs[idx]:
+            setup_test(section_name, section_name.lower().replace(" ", "_"))
 
-    with section_tabs[0]: setup_test("Practice", "practice")
-    with section_tabs[1]: setup_test("Mock Interview", "mock")
-    with section_tabs[2]: setup_test("MCQ Quiz", "mcq")
-    with section_tabs[3]: setup_test("Code Runner", "code")
-    with section_tabs[4]: setup_test("Pseudocode", "pseudo")
-
-    with section_tabs[5]:
+    # Results Tab
+    with section_tabs[len(section_list)]:
         st.subheader("📈 Results")
         h = load_history()
         if not h:
             st.info("No test results found.")
         else:
             df = pd.DataFrame(h)
-            df_display = df[["section", "timestamp", "score"]].copy()
-            st.dataframe(df_display)
+            st.dataframe(df[["section", "topic", "difficulty", "timestamp", "score"]])
 
-    with section_tabs[6]:
+    # Analytics Tab
+    with section_tabs[len(section_list) + 1]:
         st.subheader("📊 Performance & Analytics")
         h = load_history()
         if not h:
             st.info("No test data to analyze.")
         else:
             df = pd.DataFrame(h)
-            if "score" in df.columns:
+            if "score" in df.columns and "section" in df.columns:
                 fig = px.bar(df, x="section", y="score", color="section", title="Score per Section", text_auto=True)
                 st.plotly_chart(fig, use_container_width=True)
                 avg_scores = df.groupby("section")["score"].mean().reset_index()
                 fig2 = px.pie(avg_scores, names="section", values="score", title="Strength vs Weakness")
                 st.plotly_chart(fig2, use_container_width=True)
 
-    with section_tabs[7]:
+    with section_tabs[len(section_list) + 2]:
         st.subheader("🕓 History")
         h = load_history()
         if not h:
             st.info("No history found.")
         else:
             for rec in h[::-1]:
-                st.markdown(f"**Section:** {rec['section']} | **Timestamp:** {rec['timestamp']} | **Score:** {rec['score']}")
+                st.markdown(
+                    f"**Section:** {rec['section']} | **Topic:** {rec.get('topic','')} | **Difficulty:** {rec.get('difficulty','')} | **Timestamp:** {rec['timestamp']} | **Score:** {rec['score']}"
+                )
                 if st.button(f"View Details", key=rec['id']):
                     for d in rec.get("details", []):
                         st.write(f"Q: {d['q']} — Score: {d.get('score', 'N/A')}")
 
 # ------------------------------- EXAM PAGE -------------------------------
 elif st.session_state.mode == "exam":
-    if "exam" not in st.session_state:
-        st.error("No active test.")
+    if "exam" not in st.session_state or not st.session_state.exam.get("qs"):
+        st.error("No active test or questions.")
         if st.button("Return Home"):
             st.session_state.mode = "main"
             st.rerun()
             st.stop()
+        st.stop()
     else:
         ex = st.session_state.exam
-        st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
+        st.markdown(
+            f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>",
+            unsafe_allow_html=True
+        )
 
         total_time = 30 * 60
         elapsed = int(time.time() - ex["start"])
         remaining = max(total_time - elapsed, 0)
         m, s = divmod(remaining, 60)
-
         timer_placeholder = st.empty()
         if remaining <= 300:
             timer_placeholder.markdown(f"<span style='color:red;font-weight:bold;'>⚠️ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
@@ -1393,20 +1408,20 @@ elif st.session_state.mode == "exam":
         def calculate_and_save_results():
             details = []
             if ex["section"] in ["Practice", "Mock Interview"]:
-                scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
+                scores = [tfidf_similarity(a, q.get("a","")) for a, q in zip(ex["answers"], ex["qs"])]
                 avg = np.mean(scores) if scores else 0
-                details = [{"q": q["q"], "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
+                details = [{"q": q.get("q",""), "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
             elif ex["section"] in ["MCQ Quiz", "Pseudocode"]:
                 scores = []
                 for a, q in zip(ex["answers"], ex["qs"]):
-                    s = 1 if a == q["a"] else 0
+                    s = 1 if a == q.get("a","") else 0
                     scores.append(s)
-                    details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
+                    details.append({"q": q.get("q",""), "selected": a, "correct": q.get("a",""), "score": s})
                 avg = sum(scores)
             else:
                 avg = 0
-                details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
-            record_result(ex["section"], avg, details)
+                details = [{"q": q.get("q",""), "score": 0} for q in ex["qs"]]
+            record_result(ex["section"], ex["topic"], ex["diff"], avg, details)
             del st.session_state.exam
             st.session_state.mode = "main"
             st.rerun()
@@ -1441,7 +1456,7 @@ elif st.session_state.mode == "exam":
         q = ex["qs"][idx]
 
         st.markdown(
-            f"<div style='background-color:#F0F8FF;color:#000000;padding:20px;border-radius:10px;margin-bottom:15px;font-size:18px;'><b>Q{idx+1}. {q['q']}</b></div>",
+            f"<div style='background-color:#F0F8FF;color:#000000;padding:20px;border-radius:10px;margin-bottom:15px;font-size:18px;'><b>Q{idx+1}. {q.get('q','')}</b></div>",
             unsafe_allow_html=True
         )
         if ex["section"] in ["MCQ Quiz", "Pseudocode"]:
@@ -1475,7 +1490,6 @@ elif st.session_state.mode == "exam":
         st.progress((idx + 1) / len(ex["qs"]))
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
 
-        # CRITICAL: TIMER LOOP FOR AUTOTICK
         st.rerun()
         st.stop()
 
