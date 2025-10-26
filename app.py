@@ -26,7 +26,6 @@ QUESTION_FILE = "question_bank.json"
 # -------------------------------
 # Default Question Bank (WITH SAMPLE QUESTIONS)
 # -------------------------------
-# This is the sample data you requested.
 DEFAULT_BANK = {
     "Practice": {
         "Aptitude": {
@@ -287,7 +286,7 @@ if st.session_state.mode == "main":
         with section_tabs[i]:
             # Use a unique key_prefix for each section
             # section_name is the string from your "Section array"
-            setup_test(section_name, section_name.lower().replace(" ", "_"))
+            setup_test(section_name, section_name.lower().replace(" ", "_") )
 
     # ---------- Results ----------
     with section_tabs[-3]: # Corresponds to "Results"
@@ -402,7 +401,7 @@ elif st.session_state.mode == "exam":
             
             # Sections with simple, text-based answers (Practice)
             if ex["section"] == "Practice":
-                scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
+                scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"]) ]
                 avg = np.mean(scores) if scores else 0
                 details = [{"q": q["q"], "user_ans": a, "correct_ans": q["a"], "score": round(s, 2)} for a, q, s in zip(ex["answers"], ex["qs"], scores)]
             
