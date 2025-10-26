@@ -185,7 +185,7 @@ DEFAULT_BANK = {
             {"q": "Python dataclass usage?", "a": "Simplify class creation", "options":["Loop","Simplify class creation","Function","Module"]}
         ]
     },
-    "Pseudocode": {  # Pseudocode questions
+        "Pseudocode": {  # Pseudocode questions
         "Easy": [
             {"q": "Write pseudocode to find max of two numbers", "a": "If a>b then max=a else max=b", "options":["max=a+b","If a>b then max=a else max=b","max=a*b","None"]},
             {"q": "Print numbers 1 to 10", "a": "For i=1 to 10 print i", "options":["For i=1 to 10 print i","Print 1 to 10","Loop i print i","None"]},
@@ -239,7 +239,6 @@ DEFAULT_BANK = {
         ]
      }   
 }
-
 # -------------------------------
 # Load Question Bank
 # -------------------------------
@@ -318,9 +317,8 @@ if "mode" not in st.session_state:
 # MAIN PAGE
 # -------------------------------
 if st.session_state.mode == "main":
-   st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
-     st.write("Interactive Interview Practice and Analytics Portal")
-
+    st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
+    st.write("Interactive Interview Practice and Analytics Portal")
 
     section_tabs = st.tabs([
         "🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💡 Pseudocode",
@@ -482,5 +480,3 @@ elif st.session_state.mode == "exam":
 # Footer
 # -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
-
-
