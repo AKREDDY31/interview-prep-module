@@ -7,17 +7,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import plotly.express as px
 
-# ------------------------------- Page Config -------------------------------
 st.set_page_config(
     page_title="Interview Preparation Platform",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ------------------------------- Files -------------------------------
 HISTORY_FILE = "history.json"
 
-# QUESTION_BANK = {...}  # <---- Fill this dictionary with your data structure
+# Paste your QUESTION_BANK dict here!
 QUESTION_BANK ={
     "Practice": {
         "Aptitude": {
@@ -1228,17 +1226,20 @@ QUESTION_BANK ={
     ]
 }
 }
-# ------------------------------- Load Question Bank -------------------------------
-try:
-    if os.path.exists("question_bank.json"):
-        with open("question_bank.json", "r", encoding="utf-8") as f:
-            QUESTION_BANK = json.load(f)
-    else:
-        QUESTION_BANK = {}  # Should be filled manually for now
-except:
-    QUESTION_BANK = {}
 
-# ------------------------------- Helper Functions -------------------------------
+ # <-- FILL THIS AS NEEDED
+
+def load_history():
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_history(data):
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, default=str)
+
 def tfidf_similarity(a, b):
     if not a or not b or not a.strip() or not b.strip():
         return 0.0
@@ -1257,17 +1258,6 @@ def pick_questions(section, topic, difficulty, count):
         pool.append(random.choice(pool))
     return pool[:count] if pool else []
 
-def load_history():
-    try:
-        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return []
-
-def save_history(data):
-    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, default=str)
-
 def record_result(section, topic, diff, score, details):
     h = load_history()
     h.append({
@@ -1281,7 +1271,6 @@ def record_result(section, topic, diff, score, details):
     })
     save_history(h)
 
-# ------------------------------- Sidebar Instructions -------------------------------
 st.sidebar.title("🧭 Instructions & Tips")
 st.sidebar.markdown("""
 1. Select Section, Topic & Difficulty, click **Start Test**.
@@ -1292,21 +1281,19 @@ st.sidebar.markdown("""
 6. Analytics shows strengths & weaknesses.
 """)
 
-# ------------------------------- Session State Defaults -------------------------------
 if "mode" not in st.session_state:
     st.session_state.mode = "main"
 
-# ------------------------------- MAIN PAGE -------------------------------
 def setup_test(section_name, key_prefix):
     st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
     topics = list(QUESTION_BANK.get(section_name, {}).keys())
     if not topics:
-        st.warning(f"No topics found for section {section_name} in question bank.")
+        st.warning(f"No topics found for section {section_name}.")
         return
     selected_topic = st.selectbox("Select Topic", topics, key=f"{key_prefix}_topic")
     difficulties = list(QUESTION_BANK.get(section_name, {}).get(selected_topic, {}).keys())
     if not difficulties:
-        st.warning(f"No difficulties found for topic {selected_topic} in section {section_name}.")
+        st.warning(f"No difficulties found for topic {selected_topic}.")
         return
     selected_diff = st.selectbox("Difficulty", difficulties, key=f"{key_prefix}_diff")
     count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
@@ -1329,18 +1316,13 @@ def setup_test(section_name, key_prefix):
 if st.session_state.mode == "main":
     st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
     st.write("Interactive Interview Practice and Analytics Portal")
-
     section_list = list(QUESTION_BANK.keys())
     if not section_list:
-        section_list = ["Practice", "Mock Interview", "MCQ Quiz", "Code Runner", "Pseudocode"]
+        section_list = ["Practice", "MCQ Quiz", "Code Runner", "Mock Interview", "Pseudocode"]
     section_tabs = st.tabs(section_list + ["📈 Results", "📊 Performance & Analytics", "🕓 History"])
-
-    # Setup one tab for each dynamic section found in QUESTION_BANK
     for idx, section_name in enumerate(section_list):
         with section_tabs[idx]:
-            setup_test(section_name, section_name.lower().replace(" ", "_"))
-
-    # Results Tab
+            setup_test(section_name, section_name.replace(" ", "_").lower())
     with section_tabs[len(section_list)]:
         st.subheader("📈 Results")
         h = load_history()
@@ -1349,8 +1331,6 @@ if st.session_state.mode == "main":
         else:
             df = pd.DataFrame(h)
             st.dataframe(df[["section", "topic", "difficulty", "timestamp", "score"]])
-
-    # Analytics Tab
     with section_tabs[len(section_list) + 1]:
         st.subheader("📊 Performance & Analytics")
         h = load_history()
@@ -1364,7 +1344,6 @@ if st.session_state.mode == "main":
                 avg_scores = df.groupby("section")["score"].mean().reset_index()
                 fig2 = px.pie(avg_scores, names="section", values="score", title="Strength vs Weakness")
                 st.plotly_chart(fig2, use_container_width=True)
-
     with section_tabs[len(section_list) + 2]:
         st.subheader("🕓 History")
         h = load_history()
@@ -1379,7 +1358,6 @@ if st.session_state.mode == "main":
                     for d in rec.get("details", []):
                         st.write(f"Q: {d['q']} — Score: {d.get('score', 'N/A')}")
 
-# ------------------------------- EXAM PAGE -------------------------------
 elif st.session_state.mode == "exam":
     if "exam" not in st.session_state or not st.session_state.exam.get("qs"):
         st.error("No active test or questions.")
@@ -1394,7 +1372,6 @@ elif st.session_state.mode == "exam":
             f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>",
             unsafe_allow_html=True
         )
-
         total_time = 30 * 60
         elapsed = int(time.time() - ex["start"])
         remaining = max(total_time - elapsed, 0)
@@ -1407,11 +1384,10 @@ elif st.session_state.mode == "exam":
 
         def calculate_and_save_results():
             details = []
-            if ex["section"] in ["Practice", "Mock Interview"]:
-                scores = [tfidf_similarity(a, q.get("a","")) for a, q in zip(ex["answers"], ex["qs"])]
-                avg = np.mean(scores) if scores else 0
-                details = [{"q": q.get("q",""), "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
-            elif ex["section"] in ["MCQ Quiz", "Pseudocode"]:
+            # MCQ, Code Runner, Pseudocode, etc:
+            is_mcq = (ex["section"] in ["MCQ Quiz", "Pseudocode", "Python", "DBMS", "SQL", "Computer Networks", "Operating System"])
+            has_options = any("options" in q for q in ex["qs"])
+            if is_mcq or has_options:
                 scores = []
                 for a, q in zip(ex["answers"], ex["qs"]):
                     s = 1 if a == q.get("a","") else 0
@@ -1419,8 +1395,9 @@ elif st.session_state.mode == "exam":
                     details.append({"q": q.get("q",""), "selected": a, "correct": q.get("a",""), "score": s})
                 avg = sum(scores)
             else:
-                avg = 0
-                details = [{"q": q.get("q",""), "score": 0} for q in ex["qs"]]
+                scores = [tfidf_similarity(a, q.get("a","")) for a, q in zip(ex["answers"], ex["qs"])]
+                avg = np.mean(scores) if scores else 0
+                details = [{"q": q.get("q",""), "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
             record_result(ex["section"], ex["topic"], ex["diff"], avg, details)
             del st.session_state.exam
             st.session_state.mode = "main"
@@ -1431,13 +1408,11 @@ elif st.session_state.mode == "exam":
             st.warning("⏰ Time over! Auto-submitting...")
             calculate_and_save_results()
             st.stop()
-
         col1, col2 = st.columns([8, 1])
         with col2:
             if st.button("🏁 Submit Test"):
                 calculate_and_save_results()
                 st.stop()
-
         idx = ex["idx"]
         total_questions = len(ex["qs"])
         if idx < 0:
@@ -1454,12 +1429,11 @@ elif st.session_state.mode == "exam":
                 st.stop()
             st.stop()
         q = ex["qs"][idx]
-
         st.markdown(
             f"<div style='background-color:#F0F8FF;color:#000000;padding:20px;border-radius:10px;margin-bottom:15px;font-size:18px;'><b>Q{idx+1}. {q.get('q','')}</b></div>",
             unsafe_allow_html=True
         )
-        if ex["section"] in ["MCQ Quiz", "Pseudocode"]:
+        if "options" in q:
             selected = st.radio("Select Option:", q.get("options", []), key=f"ans{idx}")
             ex["answers"][idx] = selected
         elif ex["section"] == "Code Runner":
@@ -1468,9 +1442,7 @@ elif st.session_state.mode == "exam":
         else:
             ans = st.text_area("Your answer:", value=ex["answers"][idx], height=150, key=f"ans{idx}")
             ex["answers"][idx] = ans
-
         st.session_state.exam = ex
-
         f1, f2, f3 = st.columns([1, 1, 1])
         if f1.button("⬅ Previous"):
             if idx > 0:
@@ -1486,12 +1458,9 @@ elif st.session_state.mode == "exam":
                 st.stop()
         if f3.button("💾 Save Answer"):
             st.success("Answer saved ✅")
-
         st.progress((idx + 1) / len(ex["qs"]))
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
-
         st.rerun()
         st.stop()
 
-# ------------------------------- Footer -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
