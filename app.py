@@ -1238,6 +1238,8 @@ QUESTION_BANK ={
 }
 }
 
+
+
 # -------------------------------
 # Load Question Bank
 # -------------------------------
@@ -1259,7 +1261,7 @@ except Exception as e:
 # Helper Functions
 # -------------------------------
 
-# ✅ Fixed TF-IDF Function
+# ✅ TF-IDF Function
 def tfidf_similarity(a, b):
     """Calculates TF-IDF similarity between two strings, capped at 100."""
     if not a or not b or not a.strip() or not b.strip():
@@ -1272,7 +1274,7 @@ def tfidf_similarity(a, b):
     except ValueError:
         return 0.0
 
-# ✅ Updated pick_questions function
+# ✅ CRITICAL FIX: Updated pick_questions function
 def pick_questions(section, topic, difficulty, count):
     """
     Fetches questions, handling both structures:
@@ -1282,12 +1284,16 @@ def pick_questions(section, topic, difficulty, count):
     section_data = QUESTION_BANK.get(section, {})
     
     # Check if this section has topics or not by looking for difficulty keys
-    if "Easy" in section_data or "Medium" in section_data or "Hard" in section_data:
-        # No topic level, e.g., Code Runner, Pseudocode
-        pool = section_data.get(difficulty, []).copy()
-    else:
-        # Has topic level, e.g., Practice, MCQ Quiz
+    # This logic must match setup_test
+    first_level_keys = list(section_data.keys())
+    has_topics = not any(key in first_level_keys for key in ["Easy", "Medium", "Hard"])
+
+    if has_topics:
+        # Structure 1: Section -> Topic -> Difficulty
         pool = section_data.get(topic, {}).get(difficulty, []).copy()
+    else:
+        # Structure 2: Section -> Difficulty
+        pool = section_data.get(difficulty, []).copy()
 
     if not pool:
         return [] # Return empty list if no questions found
@@ -1373,7 +1379,7 @@ if st.session_state.mode == "main":
     
     section_tabs = st.tabs(tab_names)
 
-    # ---------- Section Generator (✅ This is the main fix) ----------
+    # ✅ CRITICAL FIX: Updated Section Generator
     def setup_test(section_name, key_prefix):
         """Creates the UI for starting a test for a given section."""
         st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
@@ -1384,23 +1390,33 @@ if st.session_state.mode == "main":
             return
 
         # THIS IS THE CRITICAL LOGIC:
-        # Check if the first level keys are difficulties, meaning no topics
-        has_topics = not ("Easy" in section_data or "Medium" in section_data or "Hard" in section_data)
+        # Check if the first level keys are difficulties, or topics.
+        first_level_keys = list(section_data.keys())
+        has_topics = True # Assume topics by default
+        if not first_level_keys:
+             st.error(f"No data for section: {section_name}")
+             return
+        
+        # If any of the first keys are 'Easy', 'Medium', or 'Hard', we assume NO topics.
+        if any(key in first_level_keys for key in ["Easy", "Medium", "Hard"]):
+            has_topics = False
         
         topic = None
+        topics_list = []
         if has_topics:
             # This section (e.g., Practice) has topics
-            topics_for_section = list(section_data.keys())
-            if not topics_for_section:
+            topics_list = first_level_keys # This is the "array of topics"
+            if not topics_list:
                 st.error(f"No topics found for section: {section_name}")
                 return
-            topic = st.selectbox("Select Topic", topics_for_section, key=f"{key_prefix}_topic")
+            topic = st.selectbox("Select Topic", topics_list, key=f"{key_prefix}_topic")
         else:
             # This section (e.g., Code Runner) doesn't have topics
             pass 
 
         # This part is now safe, it runs for both structures
-        diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key=f"{key_prefix}_diff")
+        difficulty_list = ["Easy", "Medium", "Hard"] # This is the "array of difficulties"
+        diff = st.selectbox("Difficulty", difficulty_list, key=f"{key_prefix}_diff")
         count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
         start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
         
@@ -1442,8 +1458,10 @@ if st.session_state.mode == "main":
             
             # Function to determine if a result was N/A
             def check_na(row):
-                rec = h[row.name] # Get original record by index
-                if any(d.get('score') == 'N/A' for d in rec.get('details', [])):
+                # Find the original record by index
+                original_record = h[row.name]
+                # Check if any detail has a score of 'N/A'
+                if any(d.get('score') == 'N/A' for d in original_record.get('details', [])):
                     return "N/A (Review)"
                 return row['score']
 
@@ -1463,11 +1481,10 @@ if st.session_state.mode == "main":
                 df_numeric = df[pd.to_numeric(df['score'], errors='coerce').notnull()]
                 df_numeric['score'] = df_numeric['score'].astype(float)
                 
-                # Exclude sections that are always 0 (N/A) from graphs
-                # N/A sections have score=0 AND details[0]['score'] == 'N/A'
+                # Exclude sections that are always N/A (score=0 and details have 'N/A')
                 na_sections = set()
-                for rec in h:
-                    if rec.get('score') == 0 and rec.get('details') and rec['details'][0].get('score') == 'N/A':
+                for i, rec in enumerate(h):
+                    if rec.get('score') == 0 and rec.get('details') and any(d.get('score') == 'N/A' for d in rec.get('details', [])):
                         na_sections.add(rec['section'])
                 
                 df_plottable = df_numeric[~df_numeric['section'].isin(na_sections)]
@@ -1504,7 +1521,7 @@ if st.session_state.mode == "main":
                             st.markdown(f"  - *Result:* **{'Correct' if d['score'] == 1 else 'Incorrect'}**")
                         elif 'user_ans' in d: # Practice / Mock / Code
                             st.text_area("Your Answer", d['user_ans'], height=100, disabled=True, key=f"{rec['id']}_{d['q']}_user")
-                            if 'correct_ans' in d: # Practice
+                            if 'correct_ans' in d: # Practice (has a correct answer)
                                 st.text_area("Correct Answer", d['correct_ans'], height=50, disabled=True, key=f"{rec['id']}_{d['q']}_correct")
                             st.markdown(f"  - *Score:* **{d.get('score', 'N/A')}**")
                         st.divider()
