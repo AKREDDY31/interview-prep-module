@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import plotly.express as px
 
-# ---- NEW: Beautiful styling ----
+# ---- Modern page styling ----
 st.set_page_config(
     page_title="Interview Preparation Platform",
     layout="wide",
@@ -15,7 +15,6 @@ st.set_page_config(
 )
 st.markdown("""
 <style>
-/* Titles / Subtitle */
 .big-title {
     text-align:center;
     color:#5612c6;
@@ -31,7 +30,6 @@ st.markdown("""
     font-size:1.2rem;
     margin-bottom:22px;
 }
-/* Sidebar Instructions */
 .cardy {
     background: linear-gradient(120deg,#f3f5fa 60%, #e4e6fb 100%);
     border-left: 6px solid #5b21b6;
@@ -60,7 +58,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------------- Question Bank Example (expand as needed) -------------------
+# ---------------------- Your QUESTION_BANK goes here! -------------------
+# Fill/replace THIS dict and keep the rest of the code as per your requirements.
 QUESTION_BANK = {
     "Practice": {
         "Aptitude": {
@@ -1117,13 +1116,10 @@ QUESTION_BANK = {
         }
     ]
 }
-}
+# ------------------------------------------------------------------------
+
 TOPICS = {
-    "Practice": list(QUESTION_BANK["Practice"].keys()),
-    "MCQ Quiz": list(QUESTION_BANK["MCQ Quiz"].keys()),
-    "Mock Interview": list(QUESTION_BANK["Mock Interview"].keys()),
-    "Code Runner": ["Easy","Medium","Hard"],  # No topic, just diff for now
-    "Pseudocode": ["Easy","Medium","Hard"]
+    k: list(v.keys()) for k, v in QUESTION_BANK.items() if isinstance(v, dict)
 }
 
 # ----------------------- Utility Functions -------------------------------
@@ -1141,14 +1137,9 @@ def tfidf_similarity(a, b):
 def pick_questions(section, topic, diff, count):
     try:
         pool = []
-        if section in ["Practice","MCQ Quiz"]:
+        if section in QUESTION_BANK and topic in QUESTION_BANK[section] and diff in QUESTION_BANK[section][topic]:
             pool = QUESTION_BANK[section][topic][diff].copy()
-        elif section=="Mock Interview":
-            pool = QUESTION_BANK["Mock Interview"][topic][diff].copy()
-        elif section in ["Code Runner","Pseudocode"]:
-            pool = QUESTION_BANK[section][diff]  # Assume these have only diff not topics
         random.shuffle(pool)
-        # If not enough, repeat questions (for demo); in real app, enforce size
         while len(pool) < count:
             pool.append(random.choice(pool))
         return pool[:count]
@@ -1211,101 +1202,113 @@ if st.session_state.mode == "main":
 
     # ---------- Practice Section ----------
     with section_tabs[0]:
-        st.markdown("<h3 style='color:#0b7;font-size:1.2em;'>Practice</h3>", unsafe_allow_html=True)
-        topic = st.selectbox("Select Topic", TOPICS["Practice"], key="practice_topic")
-        diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="practice_diff")
-        count = st.slider("Number of Questions", 1, 15, 5, key="practice_count")
-        if st.button("▶ Start Practice", key="practice_start"):
-            qs = pick_questions("Practice", topic, diff, count)
-            st.session_state.exam = {
-                "section": "Practice",
-                "topic": topic,
-                "diff": diff,
-                "qs": qs,
-                "answers": [""]*len(qs),
-                "idx": 0,
-                "start": time.time()
-            }
-            st.session_state.mode = "exam"
-            st.experimental_rerun()
+        if "Practice" in TOPICS:
+            topic = st.selectbox("Select Topic", TOPICS["Practice"], key="practice_topic")
+            diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="practice_diff")
+            count = st.slider("Number of Questions", 1, 15, 5, key="practice_count")
+            if st.button("▶ Start Practice", key="practice_start"):
+                qs = pick_questions("Practice", topic, diff, count)
+                st.session_state.exam = {
+                    "section": "Practice",
+                    "topic": topic,
+                    "diff": diff,
+                    "qs": qs,
+                    "answers": [""]*len(qs),
+                    "idx": 0,
+                    "start": time.time()
+                }
+                st.session_state.mode = "exam"
+                st.experimental_rerun()
+        else:
+            st.info("No topics available for Practice. Please fill the QUESTION_BANK.")
 
     # ---------- Mock Interview Section ----------
     with section_tabs[1]:
-        st.markdown("<h3 style='color:#b51;font-size:1.2em;'>Mock Interview</h3>", unsafe_allow_html=True)
-        interview_type = st.selectbox("Interview Type", ["Technical","HR","Manager","Clink"], key="mock_type")
-        diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="mock_diff")
-        count = st.slider("Number of Questions", 1, 15, 5, key="mock_count")
-        if st.button("▶ Start Mock Interview", key="mock_start"):
-            qs = pick_questions("Mock Interview", interview_type, diff, count)
-            st.session_state.exam = {
-                "section":"Mock Interview",
-                "topic":interview_type,
-                "diff":diff,
-                "qs":qs,
-                "answers":[""]*len(qs),
-                "idx":0,
-                "start":time.time()
-            }
-            st.session_state.mode = "exam"
-            st.experimental_rerun()
+        if "Mock Interview" in TOPICS:
+            topic = st.selectbox("Interview Type", TOPICS["Mock Interview"], key="mock_type")
+            diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="mock_diff")
+            count = st.slider("Number of Questions", 1, 15, 5, key="mock_count")
+            if st.button("▶ Start Mock Interview", key="mock_start"):
+                qs = pick_questions("Mock Interview", topic, diff, count)
+                st.session_state.exam = {
+                    "section":"Mock Interview",
+                    "topic":topic,
+                    "diff":diff,
+                    "qs":qs,
+                    "answers":[""]*len(qs),
+                    "idx":0,
+                    "start":time.time()
+                }
+                st.session_state.mode = "exam"
+                st.experimental_rerun()
+        else:
+            st.info("No topics available for Mock Interview. Please fill the QUESTION_BANK.")
 
     # ---------- MCQ Quiz ----------
     with section_tabs[2]:
-        st.markdown("<h3 style='color:#b4006a;font-size:1.2em;'>MCQ Quiz</h3>", unsafe_allow_html=True)
-        topic = st.selectbox("Quiz Topic", TOPICS["MCQ Quiz"], key="mcq_topic")
-        diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="mcq_diff")
-        count = st.slider("Number of MCQs", 1, 15, 5, key="mcq_count")
-        if st.button("▶ Start MCQ Quiz", key="mcq_start"):
-            qs = pick_questions("MCQ Quiz", topic, diff, count)
-            st.session_state.exam = {
-                "section":"MCQ Quiz",
-                "topic":topic,
-                "diff":diff,
-                "qs":qs,
-                "answers":[""]*len(qs),
-                "idx":0,
-                "start":time.time()
-            }
-            st.session_state.mode = "exam"
-            st.experimental_rerun()
+        if "MCQ Quiz" in TOPICS:
+            topic = st.selectbox("Quiz Topic", TOPICS["MCQ Quiz"], key="mcq_topic")
+            diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="mcq_diff")
+            count = st.slider("Number of MCQs", 1, 15, 5, key="mcq_count")
+            if st.button("▶ Start MCQ Quiz", key="mcq_start"):
+                qs = pick_questions("MCQ Quiz", topic, diff, count)
+                st.session_state.exam = {
+                    "section":"MCQ Quiz",
+                    "topic":topic,
+                    "diff":diff,
+                    "qs":qs,
+                    "answers":[""]*len(qs),
+                    "idx":0,
+                    "start":time.time()
+                }
+                st.session_state.mode = "exam"
+                st.experimental_rerun()
+        else:
+            st.info("No topics available for MCQ Quiz. Please fill the QUESTION_BANK.")
 
     # ---------- Code Runner ----------
     with section_tabs[3]:
-        st.markdown("<h3 style='color:#4676fa;font-size:1.2em;'>Code Runner</h3>", unsafe_allow_html=True)
-        diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="code_diff")
-        count = st.slider("Number of Code Questions", 1, 15, 5, key="code_count")
-        if st.button("▶ Start Code Practice", key="code_start"):
-            qs = pick_questions("Code Runner", "", diff, count)
-            st.session_state.exam = {
-                "section":"Code Runner",
-                "topic":"",
-                "diff":diff,
-                "qs":qs,
-                "answers":[""]*len(qs),
-                "idx":0,
-                "start":time.time()
-            }
-            st.session_state.mode = "exam"
-            st.experimental_rerun()
+        if "Code Runner" in TOPICS:
+            topic = TOPICS["Code Runner"][0] if TOPICS["Code Runner"] else ""
+            diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="code_diff")
+            count = st.slider("Number of Code Questions", 1, 15, 5, key="code_count")
+            if st.button("▶ Start Code Practice", key="code_start"):
+                qs = pick_questions("Code Runner", topic, diff, count)
+                st.session_state.exam = {
+                    "section":"Code Runner",
+                    "topic":topic,
+                    "diff":diff,
+                    "qs":qs,
+                    "answers":[""]*len(qs),
+                    "idx":0,
+                    "start":time.time()
+                }
+                st.session_state.mode = "exam"
+                st.experimental_rerun()
+        else:
+            st.info("No questions available for Code Runner. Please fill the QUESTION_BANK.")
 
     # ---------- Pseudocode ----------
     with section_tabs[4]:
-        st.markdown("<h3 style='color:#a555cd;font-size:1.2em;'>Pseudocode</h3>", unsafe_allow_html=True)
-        diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="pseudo_diff")
-        count = st.slider("Number of Pseudocode Questions", 1, 15, 5, key="pseudo_count")
-        if st.button("▶ Start Pseudocode", key="pseudo_start"):
-            qs = pick_questions("Pseudocode", "", diff, count)
-            st.session_state.exam = {
-                "section":"Pseudocode",
-                "topic":"",
-                "diff":diff,
-                "qs":qs,
-                "answers":[""]*len(qs),
-                "idx":0,
-                "start":time.time()
-            }
-            st.session_state.mode = "exam"
-            st.experimental_rerun()
+        if "Pseudocode" in TOPICS:
+            topic = TOPICS["Pseudocode"][0] if TOPICS["Pseudocode"] else ""
+            diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="pseudo_diff")
+            count = st.slider("Number of Pseudocode Questions", 1, 15, 5, key="pseudo_count")
+            if st.button("▶ Start Pseudocode", key="pseudo_start"):
+                qs = pick_questions("Pseudocode", topic, diff, count)
+                st.session_state.exam = {
+                    "section":"Pseudocode",
+                    "topic":topic,
+                    "diff":diff,
+                    "qs":qs,
+                    "answers":[""]*len(qs),
+                    "idx":0,
+                    "start":time.time()
+                }
+                st.session_state.mode = "exam"
+                st.experimental_rerun()
+        else:
+            st.info("No questions available for Pseudocode. Please fill the QUESTION_BANK.")
 
     # ---------- Results ----------
     with section_tabs[5]:
@@ -1347,26 +1350,38 @@ if st.session_state.mode == "main":
 
 # ---------------------- Exam Page: Unified Logic for All Sections -----------------
 elif st.session_state.mode == "exam":
-    if "exam" not in st.session_state:
+    ex = st.session_state.get("exam", None)
+    if not ex:
         st.error("No active test.")
         if st.button("Return Home"):
             st.session_state.mode = "main"
             st.experimental_rerun()
     else:
-        ex = st.session_state.exam
         st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
-
-        # -- Timer
         total_time = 30 * 60
+        # --- Real-time timer update ---
+        if "timer" not in st.session_state:
+            st.session_state.timer = time.time()
         elapsed = int(time.time() - ex["start"])
         remaining = max(total_time - elapsed, 0)
         m, s = divmod(remaining, 60)
-        if remaining <= 300:
-            st.markdown(f"<span style='color:red;font-weight:bold;'⚠️ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
-        else:
-            st.markdown(f"<span style='color:green;font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>", unsafe_allow_html=True)
 
-        def calculate_and_save_results():
+        colT1, colT2 = st.columns([7, 1])
+        timer_placeholder = colT1.empty()
+        def timer_update():
+            nonlocal remaining, timer_placeholder
+            timer_placeholder.markdown(
+                f"<span style='color:{'red' if remaining <= 300 else 'green'};font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>",
+                unsafe_allow_html=True
+            )
+
+        timer_update()
+        time.sleep(1)
+        if remaining > 0:
+            st.experimental_rerun()
+        else:
+            # Only auto-submit if not already at submission
+            st.warning("⏰ Time over! Submitting...")
             details = []
             if ex["section"] in ["Practice"]:
                 scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
@@ -1389,31 +1404,50 @@ elif st.session_state.mode == "exam":
             else:
                 avg = 0
                 details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
-
             record_result(ex["section"], ex.get("topic",""), avg, details)
             del st.session_state.exam
             st.session_state.mode = "main"
             st.experimental_rerun()
 
-        if remaining == 0:
-            st.warning("⏰ Time over! Submitting...")
-            calculate_and_save_results()
-
-        # Submit button
-        col1, col2 = st.columns([7, 1])
-        with col2:
+        with colT2:
             if st.button("🏁 Submit Test"):
-                calculate_and_save_results()
+                details = []
+                if ex["section"] in ["Practice"]:
+                    scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
+                    avg = np.mean(scores) if scores else 0
+                    details = [{"q": q["q"], "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
+                elif ex["section"] == "MCQ Quiz":
+                    scores = []
+                    for a, q in zip(ex["answers"], ex["qs"]):
+                        s = 1 if a == q["a"] else 0
+                        scores.append(s)
+                        details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
+                    avg = sum(scores)
+                elif ex["section"] in ["Mock Interview","Pseudocode","Code Runner"]:
+                    scores = []
+                    for a, q in zip(ex["answers"], ex["qs"]):
+                        s = tfidf_similarity(a, q["a"]) if ex["section"] != "Mock Interview" else 0.0
+                        scores.append(s)
+                        details.append({"q": q["q"], "answer": a, "score": s})
+                    avg = np.mean(scores) if scores else 0
+                else:
+                    avg = 0
+                    details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
+                record_result(ex["section"], ex.get("topic",""), avg, details)
+                del st.session_state.exam
+                st.session_state.mode = "main"
+                st.experimental_rerun()
 
         idx = ex["idx"]
         q = ex["qs"][idx]
         st.markdown(
-            f"<div style='background-color:#f9f7ff;color:#1a0441;padding:22px 15px 16px 18px;border-radius:11px;margin-bottom:12px;font-size:17.5px;font-weight:500;'><b>Q{idx+1}. {q['q']}</b></div>",
+            f"<div style='background-color:#f9f7ff;color:#1a0441;padding:22px 15px 16px 18px;border-radius:11px;margin-bottom:12px;font-size:17.5px;font-weight:500;'><b>Q{idx+1}. {q.get('q','')}</b></div>",
             unsafe_allow_html=True
         )
 
-        if ex["section"] == "MCQ Quiz":
-            opts = q.get("options",[])
+        # Dynamic question rendering for MCQs/Pseudocode MCQs
+        if ex["section"] == "MCQ Quiz" or (ex["section"] == "Pseudocode" and 'options' in q):
+            opts = q.get("options", [])
             selected = st.radio("Select Option:", opts, index=opts.index(ex["answers"][idx]) if ex["answers"][idx] in opts else 0, key=f"ans{idx}")
             ex["answers"][idx] = selected
         elif ex["section"] == "Code Runner":
@@ -1444,10 +1478,5 @@ elif st.session_state.mode == "exam":
         st.progress((idx + 1) / len(ex["qs"]))
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
 
-        time.sleep(1)
-        st.experimental_rerun()
-
 # --- Footer ---
 st.markdown("<div style='text-align:center;padding:10px;color:#5612c6;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
-
-
