@@ -1,3 +1,4 @@
+# app.py
 import streamlit as st
 import random, time
 from streamlit_extras.let_it_rain import rain
@@ -16,7 +17,7 @@ st.markdown("""
 .timer { text-align:center; font-size:1.2em; font-weight:bold; color:#004d40; margin-bottom:15px;}
 .progress-bar { height:20px; border-radius:10px; background:#B2DFDB; margin-bottom:20px;}
 .progress-bar-fill { height:100%; border-radius:10px; background:#00796b; transition: width 0.5s;}
-.badge { display:inline-block; padding:5px 15px; margin:5px; border-radius:15px; background:#FFD700; color:#004d40; font-weight:bold;}
+.badge { display:inline-block; padding:5px 15px; margin:5px; border-radius:15px; background:#FFD700; color:#004d40; font-weight:bold; transition:all 0.3s ease; }
 .footer { text-align:center; font-size:14px; color:#555; margin-top:40px; padding:10px;}
 </style>
 """, unsafe_allow_html=True)
@@ -29,10 +30,18 @@ if "shuffled_questions" not in st.session_state: st.session_state.shuffled_quest
 if "start_time" not in st.session_state: st.session_state.start_time = None
 if "duration" not in st.session_state: st.session_state.duration = 300
 if "badges" not in st.session_state: st.session_state.badges = []
+if "consecutive_correct" not in st.session_state: st.session_state.consecutive_correct = 0
 
 # ------------------ Question Bank ------------------
 QUESTION_BANK = {
-    "Practice": {"Easy":[{"q":"If 5x + 3 = 18, what is x?","a":"3","options":["2","3","4","5"]}]}
+    "Practice": {"Easy":[
+        {"q":"If 5x + 3 = 18, what is x?","a":"3","options":["2","3","4","5"]},
+        {"q":"If a:b = 2:3 and b:c = 4:5, find a:c","a":"8:15","options":["2:5","8:15","4:5","6:7"]},
+        {"q":"Sum of angles in a triangle?","a":"180","options":["90","180","360","270"]},
+    ]},
+    "Mock Interview": {"Easy":[
+        {"q":"What is Python?","a":"Programming Language","options":["Snake","Programming Language","Game","OS"]},
+    ]}
 }
 
 # ------------------ Landing Page ------------------
@@ -42,8 +51,8 @@ if not st.session_state.in_test:
     st.markdown('<div class="description">Select a section & difficulty, then start practicing!</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([1,1])
-    with col1: section = st.selectbox("Select Section", ["Practice"])
-    with col2: difficulty = st.selectbox("Select Difficulty", ["Easy"])
+    with col1: section = st.selectbox("Select Section", list(QUESTION_BANK.keys()))
+    with col2: difficulty = st.selectbox("Select Difficulty", ["Easy","Medium","Hard"])
 
     st.markdown("<div style='text-align:center'>", unsafe_allow_html=True)
     if st.button("Start Test"):
@@ -93,11 +102,32 @@ if st.session_state.in_test:
         st.session_state.in_test=False
         score = sum(1 for i, ans in enumerate(st.session_state.selected_answers) if ans==questions[i]['a'])
         st.success(f"🎉 Test Completed! Your score: {score}/{len(questions)}")
-        if score==len(questions):
+
+        # Badge: Perfect Score
+        if score==len(questions) and "🏆 Perfect Score" not in st.session_state.badges:
             st.session_state.badges.append("🏆 Perfect Score")
             st.markdown('<div class="badge">🏆 Perfect Score</div>', unsafe_allow_html=True)
             rain()
-    # Display Badges
+
+        # Badge: Section Completed
+        badge_name = f"✅ Completed {section}"
+        if badge_name not in st.session_state.badges:
+            st.session_state.badges.append(badge_name)
+            st.markdown(f'<div class="badge">{badge_name}</div>', unsafe_allow_html=True)
+
+        # Badge: Consecutive Correct (check streaks)
+        streak = 0
+        for i, ans in enumerate(st.session_state.selected_answers):
+            if ans == questions[i]['a']:
+                streak += 1
+            else:
+                streak = 0
+            if streak >=3 and "🔥 3 Correct Streak" not in st.session_state.badges:
+                st.session_state.badges.append("🔥 3 Correct Streak")
+                st.markdown('<div class="badge">🔥 3 Correct Streak</div>', unsafe_allow_html=True)
+
+    # Display All Badges
+    st.markdown("<div style='margin-top:20px;'><b>Badges Earned:</b></div>", unsafe_allow_html=True)
     for badge in st.session_state.badges:
         st.markdown(f'<div class="badge">{badge}</div>', unsafe_allow_html=True)
 
