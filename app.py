@@ -1277,7 +1277,8 @@ def tfidf_similarity(a, b):
 # ✅ CRITICAL FIX: Updated pick_questions function
 def pick_questions(section, topic, difficulty, count):
     """
-    Fetches questions, handling both structures:
+    Fetches questions based on the selected array values (strings).
+    Handles both structures:
     - Section -> Topic -> Difficulty
     - Section -> Difficulty
     """
@@ -1361,7 +1362,7 @@ if st.session_state.mode == "main":
     st.write("Interactive Interview Practice and Analytics Portal")
 
     # Define all section tabs
-    all_sections = list(QUESTION_BANK.keys())
+    all_sections = list(QUESTION_BANK.keys()) # This is your Section array
     
     # Create descriptive tab names
     tab_name_map = {
@@ -1409,19 +1410,21 @@ if st.session_state.mode == "main":
             if not topics_list:
                 st.error(f"No topics found for section: {section_name}")
                 return
+            # User selects from the array, Streamlit gives us the string
             topic = st.selectbox("Select Topic", topics_list, key=f"{key_prefix}_topic")
         else:
-            # This section (e..g, Code Runner) doesn't have topics
+            # This section (e.g., Code Runner) doesn't have topics
             pass 
 
         # This part is now safe, it runs for both structures
         difficulty_list = ["Easy", "Medium", "Hard"] # This is the "array for difficulty"
+        # User selects from the array, Streamlit gives us the string
         diff = st.selectbox("Difficulty", difficulty_list, key=f"{key_prefix}_diff")
         count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
         start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
         
         if start_btn:
-            # Fetch questions based on the selected array values
+            # Fetch questions based on the selected array values (strings)
             qs = pick_questions(section_name, topic, diff, count) 
             
             if not qs: # Check if pick_questions returned an empty list
@@ -1444,6 +1447,7 @@ if st.session_state.mode == "main":
     for i, section_name in enumerate(all_sections):
         with section_tabs[i]:
             # Use a unique key_prefix for each section
+            # section_name is the string from your "Section array"
             setup_test(section_name, section_name.lower().replace(" ", "_"))
 
     # ---------- Results ----------
@@ -1614,15 +1618,19 @@ elif st.session_state.mode == "exam":
             # Normalize options and answer for comparison
             normalized_options = [str(opt).strip() for opt in options]
             normalized_answer = str(current_answer).strip()
-
+            
+            # Use the string from the options array to display
+            display_options = q.get("options", [])
+            
             try:
                 default_index = normalized_options.index(normalized_answer)
             except ValueError:
                 default_index = 0 # Default to first option if answer not set
                 if current_answer == "": # Set initial answer to first option
-                    ex["answers"][idx] = options[0] if options else ""
-                
-            selected = st.radio("Select Option:", options, index=default_index, key=f"ans{idx}")
+                    ex["answers"][idx] = display_options[0] if display_options else ""
+            
+            # Use the original options (with formatting) for display
+            selected = st.radio("Select Option:", display_options, index=default_index, key=f"ans{idx}")
             ex["answers"][idx] = selected
 
         elif ex["section"] == "Code Runner":
