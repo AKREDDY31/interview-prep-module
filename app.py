@@ -319,7 +319,7 @@ if "mode" not in st.session_state:
 # -------------------------------
 if st.session_state.mode == "main":
    st.markdown("<h1 style='text-align:center;color:#4B0082;'>Interview Preparation Platform</h1>", unsafe_allow_html=True)
-    st.write("Interactive Interview Practice and Analytics Portal")  make the line centred just below it 
+     st.write("Interactive Interview Practice and Analytics Portal")
 
 
     section_tabs = st.tabs([
@@ -482,4 +482,5 @@ elif st.session_state.mode == "exam":
 # Footer
 # -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
+
 
