@@ -1,0 +1,1119 @@
+[
+  {
+    "id": "ece6cfff-8fa6-4351-b08e-4ce0c0bcc756",
+    "section": "Practice",
+    "timestamp": "2025-10-12T07:58:59.673968",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is an array?",
+        "score": 0.0
+      },
+      {
+        "q": "Define algorithm.",
+        "score": 0.0
+      },
+      {
+        "q": "Define stack.",
+        "score": 0.0
+      },
+      {
+        "q": "What is list comprehension?",
+        "score": 0.0
+      },
+      {
+        "q": "Define algorithm.",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "343a2ab0-a312-415d-8ebc-13782aead82b",
+    "section": "Practice",
+    "timestamp": "2025-10-12T10:16:40.967185",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Practice Easy Question 3",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 1",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 5",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 2",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 4",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "70380134-4426-49f7-a3d0-ef3f4c052c92",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-12T10:17:09.742994",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Mock Easy Question 2",
+        "score": 0.0
+      },
+      {
+        "q": "Mock Easy Question 4",
+        "score": 0.0
+      },
+      {
+        "q": "Mock Easy Question 5",
+        "score": 0.0
+      },
+      {
+        "q": "Mock Easy Question 3",
+        "score": 0.0
+      },
+      {
+        "q": "Mock Easy Question 1",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "e2ac463a-dbdc-40e5-a5cf-448ba35e4375",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T10:17:27.204032",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "MCQ Easy Question 3",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 2",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 1",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 4",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 5",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "6dd8af43-3094-4e4a-ad05-8aa12be98a23",
+    "section": "Practice",
+    "timestamp": "2025-10-12T10:22:23.574565",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Practice Easy Question 5",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 2",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 3",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 7",
+        "score": 0.0
+      },
+      {
+        "q": "Practice Easy Question 1",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "c05e5d26-a0fc-49cb-b36b-fca4a1ac6b18",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T10:25:26.074912",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "MCQ Easy Question 3",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 5",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 6",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 7",
+        "score": 0.0
+      },
+      {
+        "q": "MCQ Easy Question 8",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "4ab02fac-de91-4c00-9159-e3a62940c0c4",
+    "section": "Practice",
+    "timestamp": "2025-10-12T10:45:37.888122",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is the time complexity of accessing an element in a list by index?",
+        "score": 0
+      },
+      {
+        "q": "What is a Python dictionary?",
+        "score": 0
+      },
+      {
+        "q": "What does 'len()' function do in Python?",
+        "score": 0
+      },
+      {
+        "q": "Which keyword is used to define a function in Python?",
+        "score": 0
+      },
+      {
+        "q": "How to comment a single line in Python?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "4464abe6-ff4d-46f0-8cf5-16a40e272a3e",
+    "section": "Practice",
+    "timestamp": "2025-10-12T10:45:47.140875",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is recursion? Give an example.",
+        "score": 0
+      },
+      {
+        "q": "Explain the difference between list and tuple in Python",
+        "score": 0
+      },
+      {
+        "q": "What is a binary tree?",
+        "score": 0
+      },
+      {
+        "q": "Explain inheritance in OOPs",
+        "score": 0
+      },
+      {
+        "q": "How to handle exceptions in Python?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "c93ddb28-f57e-4ddb-9331-1037aec7105c",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-12T10:45:58.046240",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Difference between '==' and 'is'",
+        "score": 0
+      },
+      {
+        "q": "How to convert a string to int?",
+        "score": 0
+      },
+      {
+        "q": "What is the difference between Python 2 and 3?",
+        "score": 0
+      },
+      {
+        "q": "Explain Python decorators",
+        "score": 0
+      },
+      {
+        "q": "How to reverse a string in Python?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "cd799ab4-85e1-452a-b915-18b65c46d005",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T10:46:07.549377",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "68bc7ef0-384b-427c-a511-3d824d1ca768",
+    "section": "Code Runner",
+    "timestamp": "2025-10-12T10:46:29.968187",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "d38b2ecc-fc41-4e3d-92f8-0b8251ee40f1",
+    "section": "Pseudocode",
+    "timestamp": "2025-10-12T10:46:42.130584",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "72106473-dcbc-4c3d-b810-8bf27740a1ec",
+    "section": "Practice",
+    "timestamp": "2025-10-12T10:51:22.698598",
+    "score": 3.8174813226040714,
+    "details": [
+      {
+        "q": "What does 'len()' function do in Python?",
+        "score": 19.087406613020356
+      },
+      {
+        "q": "Which data structure uses FIFO?",
+        "score": 0
+      },
+      {
+        "q": "How to comment a single line in Python?",
+        "score": 0
+      },
+      {
+        "q": "What is a Python dictionary?",
+        "score": 0
+      },
+      {
+        "q": "What is the time complexity of accessing an element in a list by index?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "b3221c53-23be-4bd8-b550-380d7f6a73e6",
+    "section": "Code Runner",
+    "timestamp": "2025-10-12T10:53:23.518852",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "bdeb65a7-0738-4c33-8e98-123a403e3cfa",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T10:53:34.396916",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "8420fc15-2016-4692-b95e-0ee43de11c56",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-12T10:53:49.119610",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "How to convert a string to int?",
+        "score": 0
+      },
+      {
+        "q": "What is the use of 'with' statement?",
+        "score": 0
+      },
+      {
+        "q": "How to reverse a string in Python?",
+        "score": 0
+      },
+      {
+        "q": "Explain pass statement in Python",
+        "score": 0
+      },
+      {
+        "q": "Difference between '==' and 'is'",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "28ce6d07-4dfb-4a43-9fc8-d538c9e7ba7e",
+    "section": "Practice",
+    "timestamp": "2025-10-12T11:26:52.349268",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is 10% of 500?",
+        "score": 0
+      },
+      {
+        "q": "If a car travels 90 km in 1.5 hours, find speed",
+        "score": 0
+      },
+      {
+        "q": "What is 25% of 240?",
+        "score": 0
+      },
+      {
+        "q": "If a:b = 2:3 and b:c = 4:5, find a:c",
+        "score": 0
+      },
+      {
+        "q": "What is the square root of 144?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "9f75d9df-99b9-4538-b9b1-2d38fc5bae77",
+    "section": "Practice",
+    "timestamp": "2025-10-12T11:27:01.535346",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "A man runs 20 km in 4 hours, speed?",
+        "score": 0
+      },
+      {
+        "q": "Next in series: 7, 14, 28, 56, ?",
+        "score": 0
+      },
+      {
+        "q": "If 3x - 7 = 8, x?",
+        "score": 0
+      },
+      {
+        "q": "Next in series: 2, 6, 12, 20, ?",
+        "score": 0
+      },
+      {
+        "q": "Percentage of 45 out of 60?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "6387c0b1-9f9e-42ec-bb29-363c228ce94b",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-12T11:29:02.325850",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is a function?",
+        "score": 0
+      },
+      {
+        "q": "What is your greatest strength?",
+        "score": 0
+      },
+      {
+        "q": "What is an IDE?",
+        "score": 0
+      },
+      {
+        "q": "Explain OOP in simple terms",
+        "score": 0
+      },
+      {
+        "q": "Difference between list and tuple?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "82322f8e-27ee-4fe4-a764-e054b3679d6e",
+    "section": "Practice",
+    "timestamp": "2025-10-12T16:59:10.004327",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is 15% of 200?",
+        "score": 0
+      },
+      {
+        "q": "If a train travels 60 km in 1 hour, what is its speed?",
+        "score": 0
+      },
+      {
+        "q": "Sum of first 10 natural numbers?",
+        "score": 0
+      },
+      {
+        "q": "What is the square root of 144?",
+        "score": 0
+      },
+      {
+        "q": "If 5x + 3 = 18, what is x?",
+        "score": 0
+      },
+      {
+        "q": "What is 10% of 500?",
+        "score": 0
+      },
+      {
+        "q": "If 7x = 21, what is x?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "b043970d-afcb-42b5-a3fb-8fc79b97ce95",
+    "section": "Code Runner",
+    "timestamp": "2025-10-12T17:01:17.496155",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "80cc4ad7-922b-4cb9-bdc3-dd847185c057",
+    "section": "Code Runner",
+    "timestamp": "2025-10-12T17:01:58.809756",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "d57eed24-14fd-4dba-8704-b2894b2fe0cb",
+    "section": "Practice",
+    "timestamp": "2025-10-12T17:02:20.624652",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "If a:b = 1:2, b:c = 3:4, find a:c",
+        "score": 0
+      },
+      {
+        "q": "If 7x = 21, what is x?",
+        "score": 0
+      },
+      {
+        "q": "If a car travels 90 km in 1.5 hours, find speed",
+        "score": 0
+      },
+      {
+        "q": "Next in series: 5, 10, 15, 20, ?",
+        "score": 0
+      },
+      {
+        "q": "Find the missing number: 2, 4, 8, 16, ?",
+        "score": 0
+      },
+      {
+        "q": "What is 10% of 500?",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "0627486b-aad9-412b-b4af-eb7a57033e03",
+    "section": "Pseudocode",
+    "timestamp": "2025-10-12T17:03:42.690851",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "b67b3447-a644-49dc-9abb-9fc44ad2fe47",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T17:05:15.682500",
+    "score": null,
+    "details": []
+  },
+  {
+    "id": "99b8b4f3-2143-4a66-b165-6feb1ee1bd11",
+    "section": "Practice",
+    "timestamp": "2025-10-12T17:24:11.477682",
+    "score": 11.59,
+    "details": [
+      {
+        "q": "If a car travels 90 km in 1.5 hours, find speed",
+        "score": 0.0
+      },
+      {
+        "q": "If a:b = 1:2, b:c = 3:4, find a:c",
+        "score": 0.0
+      },
+      {
+        "q": "Solve: 8 + x = 15",
+        "score": 0.0
+      },
+      {
+        "q": "If a:b = 2:3 and b:c = 4:5, find a:c",
+        "score": 0.0
+      },
+      {
+        "q": "If a train travels 60 km in 1 hour, what is its speed?",
+        "score": 57.97
+      }
+    ]
+  },
+  {
+    "id": "f88afd96-e738-478f-9d2f-26c7ad820f28",
+    "section": "Practice",
+    "timestamp": "2025-10-12T17:31:36.256224",
+    "score": 80.0,
+    "details": [
+      {
+        "q": "If a car travels 90 km in 1.5 hours, find speed",
+        "score": 0.0
+      },
+      {
+        "q": "What is the square root of 144?",
+        "score": 100.0
+      },
+      {
+        "q": "Next in series: 5, 10, 15, 20, ?",
+        "score": 100.0
+      },
+      {
+        "q": "Sum of first 10 natural numbers?",
+        "score": 100.0
+      },
+      {
+        "q": "Find the missing number: 2, 4, 8, 16, ?",
+        "score": 100.0
+      }
+    ]
+  },
+  {
+    "id": "8d68208e-6c3f-431c-a732-792297d67d5d",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-12T17:32:14.526825",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Explain OOP in simple terms",
+        "score": 0.0
+      },
+      {
+        "q": "What is string slicing?",
+        "score": 0.0
+      },
+      {
+        "q": "What is an IDE?",
+        "score": 0.0
+      },
+      {
+        "q": "What is inheritance?",
+        "score": 0.0
+      },
+      {
+        "q": "What is your greatest strength?",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "65e4e4b4-9488-43c9-a59d-592b9c42e35d",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T17:32:47.296696",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Which keyword exits a loop?",
+        "selected": "exit",
+        "correct": "break",
+        "score": 0
+      },
+      {
+        "q": "Which is mutable in Python?",
+        "selected": "Tuple",
+        "correct": "List",
+        "score": 0
+      },
+      {
+        "q": "Which operator is for exponent?",
+        "selected": "^",
+        "correct": "**",
+        "score": 0
+      },
+      {
+        "q": "Python comment symbol?",
+        "selected": "//",
+        "correct": "#",
+        "score": 0
+      },
+      {
+        "q": "Python package installer?",
+        "selected": "npm",
+        "correct": "pip",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "76a209cd-f2f2-473d-b154-f30d218a45ec",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-12T17:33:16.121677",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is if-else?",
+        "score": 0.0
+      },
+      {
+        "q": "What is a tuple in Python?",
+        "score": 0.0
+      },
+      {
+        "q": "What is your greatest strength?",
+        "score": 0.0
+      },
+      {
+        "q": "What is a loop?",
+        "score": 0.0
+      },
+      {
+        "q": "Difference between break and continue?",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "3164a77a-3c98-49a9-aee5-8f3527163541",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T17:33:48.508382",
+    "score": 3.0,
+    "details": [
+      {
+        "q": "HTML stands for?",
+        "selected": "HyperText Markup Language",
+        "correct": "HyperText Markup Language",
+        "score": 1
+      },
+      {
+        "q": "Python boolean values?",
+        "selected": "Yes/No",
+        "correct": "True/False",
+        "score": 0
+      },
+      {
+        "q": "Python package installer?",
+        "selected": "pip",
+        "correct": "pip",
+        "score": 1
+      },
+      {
+        "q": "Which loop runs at least once?",
+        "selected": "for",
+        "correct": "do-while",
+        "score": 0
+      },
+      {
+        "q": "Which is immutable?",
+        "selected": "Tuple",
+        "correct": "Tuple",
+        "score": 1
+      }
+    ]
+  },
+  {
+    "id": "b9cd9a9f-c814-4371-ac05-686bb3dcec9c",
+    "section": "Code Runner",
+    "timestamp": "2025-10-12T17:34:25.513573",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Append 5 to list",
+        "score": 0
+      },
+      {
+        "q": "Print 'Hello' 3 times",
+        "score": 0
+      },
+      {
+        "q": "Print length of list [1,2,3]",
+        "score": 0
+      },
+      {
+        "q": "Check if string is palindrome",
+        "score": 0
+      },
+      {
+        "q": "Reverse a string 'abc'",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "d653fe5c-8d7a-4438-b4bb-a121b4ab678c",
+    "section": "Pseudocode",
+    "timestamp": "2025-10-12T17:35:11.993913",
+    "score": 2.0,
+    "details": [
+      {
+        "q": "Sum of first n numbers",
+        "selected": "sum=n*(n+1)/2",
+        "correct": "sum=0 For i=1 to n sum=sum+i",
+        "score": 0
+      },
+      {
+        "q": "Find power a^b",
+        "selected": "Use pow",
+        "correct": "result=1 For i=1 to b result*=a",
+        "score": 0
+      },
+      {
+        "q": "Swap two numbers",
+        "selected": "a,b=b,a",
+        "correct": "temp=a a=b b=temp",
+        "score": 0
+      },
+      {
+        "q": "Reverse a string",
+        "selected": "For i=length downto 1 print char[i]",
+        "correct": "For i=length downto 1 print char[i]",
+        "score": 1
+      },
+      {
+        "q": "Print multiplication table",
+        "selected": "For i=1 to 10 print n*i",
+        "correct": "For i=1 to 10 print n*i",
+        "score": 1
+      }
+    ]
+  },
+  {
+    "id": "b4ef4db1-c751-4a6b-86b4-3bf34ac23cc9",
+    "section": "Practice",
+    "timestamp": "2025-10-12T17:37:49.176566",
+    "score": 71.59,
+    "details": [
+      {
+        "q": "Next in series: 5, 10, 15, 20, ?",
+        "score": 100.0
+      },
+      {
+        "q": "Find the missing number: 2, 4, 8, 16, ?",
+        "score": 100.0
+      },
+      {
+        "q": "What is 10% of 500?",
+        "score": 100.0
+      },
+      {
+        "q": "If 5x + 3 = 18, what is x?",
+        "score": 0.0
+      },
+      {
+        "q": "If a car travels 90 km in 1.5 hours, find speed",
+        "score": 57.97
+      }
+    ]
+  },
+  {
+    "id": "4684b6d0-02eb-48eb-9fc9-61d1a5a9cf61",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-12T17:38:31.375718",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Difference between break and continue?",
+        "score": 0.0
+      },
+      {
+        "q": "What is inheritance?",
+        "score": 0.0
+      },
+      {
+        "q": "What is a loop?",
+        "score": 0.0
+      },
+      {
+        "q": "Explain OOP in simple terms",
+        "score": 0.0
+      },
+      {
+        "q": "What is your greatest strength?",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "5cd0038b-eb59-441e-af03-7fb90801f74e",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-12T17:39:14.790439",
+    "score": 5.0,
+    "details": [
+      {
+        "q": "Python package installer?",
+        "selected": "pip",
+        "correct": "pip",
+        "score": 1
+      },
+      {
+        "q": "Which language is used for AI?",
+        "selected": "Python",
+        "correct": "Python",
+        "score": 1
+      },
+      {
+        "q": "Python boolean values?",
+        "selected": "True/False",
+        "correct": "True/False",
+        "score": 1
+      },
+      {
+        "q": "Which is used to store key-value?",
+        "selected": "Dictionary",
+        "correct": "Dictionary",
+        "score": 1
+      },
+      {
+        "q": "HTML stands for?",
+        "selected": "HyperText Markup Language",
+        "correct": "HyperText Markup Language",
+        "score": 1
+      }
+    ]
+  },
+  {
+    "id": "752817c0-f66f-4b18-90b0-314fbf73fb6d",
+    "section": "Code Runner",
+    "timestamp": "2025-10-12T17:39:51.615409",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Implement quicksort",
+        "score": 0
+      },
+      {
+        "q": "Knapsack 0/1 problem",
+        "score": 0
+      },
+      {
+        "q": "Find connected components",
+        "score": 0
+      },
+      {
+        "q": "Detect duplicate in array",
+        "score": 0
+      },
+      {
+        "q": "Implement binary search tree insert",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "9e9c64ee-08fd-43cc-8ea4-772eae9b9555",
+    "section": "Pseudocode",
+    "timestamp": "2025-10-12T17:40:24.654873",
+    "score": 4.0,
+    "details": [
+      {
+        "q": "Check palindrome",
+        "selected": "Reverse string compare with original",
+        "correct": "Reverse string compare with original",
+        "score": 1
+      },
+      {
+        "q": "Calculate factorial",
+        "selected": "fact=1 For i=1 to n fact=fact*i",
+        "correct": "fact=1 For i=1 to n fact=fact*i",
+        "score": 1
+      },
+      {
+        "q": "Check prime number",
+        "selected": "If n<2 not prime For i=2 to n-1 if n%i=0 not prime else prime",
+        "correct": "If n<2 not prime For i=2 to n-1 if n%i=0 not prime else prime",
+        "score": 1
+      },
+      {
+        "q": "Reverse a string",
+        "selected": "For i=length downto 1 print char[i]",
+        "correct": "For i=length downto 1 print char[i]",
+        "score": 1
+      },
+      {
+        "q": "Find smallest in array",
+        "selected": "Sort array",
+        "correct": "min=a[0] For each element if element<min min=element",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "0bf0d8f4-086b-4192-b06b-2159fe765338",
+    "section": "Practice",
+    "timestamp": "2025-10-13T15:46:19.919257",
+    "score": 55.8,
+    "details": [
+      {
+        "q": "Solve: 8 + x = 15",
+        "score": 0.0
+      },
+      {
+        "q": "Sum of first 10 natural numbers?",
+        "score": 100.0
+      },
+      {
+        "q": "What is 10% of 500?",
+        "score": 100.0
+      },
+      {
+        "q": "If 7x = 21, what is x?",
+        "score": 0.0
+      },
+      {
+        "q": "What is 25% of 240?",
+        "score": 0.0
+      },
+      {
+        "q": "If 5x + 3 = 18, what is x?",
+        "score": 0.0
+      },
+      {
+        "q": "If a car travels 90 km in 1.5 hours, find speed",
+        "score": 57.97
+      },
+      {
+        "q": "What is the square root of 144?",
+        "score": 100.0
+      },
+      {
+        "q": "What is 15% of 200?",
+        "score": 100.0
+      },
+      {
+        "q": "If a = 3 and b = 4, find a^2 + b^2",
+        "score": 100.0
+      }
+    ]
+  },
+  {
+    "id": "b2d73be6-e65d-4d5a-9b49-880478d988f4",
+    "section": "Mock Interview",
+    "timestamp": "2025-10-13T15:47:12.821828",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "What is string slicing?",
+        "score": 0.0
+      },
+      {
+        "q": "Why do you want to work with us?",
+        "score": 0.0
+      },
+      {
+        "q": "What is an IDE?",
+        "score": 0.0
+      },
+      {
+        "q": "What is a loop?",
+        "score": 0.0
+      },
+      {
+        "q": "What is a function?",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "id": "be9e9673-94cb-4618-9e65-19ddfe408919",
+    "section": "MCQ Quiz",
+    "timestamp": "2025-10-13T15:47:21.936195",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Python extension file?",
+        "selected": ".java",
+        "correct": ".py",
+        "score": 0
+      },
+      {
+        "q": "Which keyword exits a loop?",
+        "selected": "",
+        "correct": "break",
+        "score": 0
+      },
+      {
+        "q": "HTML stands for?",
+        "selected": "",
+        "correct": "HyperText Markup Language",
+        "score": 0
+      },
+      {
+        "q": "Which operator is for exponent?",
+        "selected": "",
+        "correct": "**",
+        "score": 0
+      },
+      {
+        "q": "Python comment symbol?",
+        "selected": "",
+        "correct": "#",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "f64e64f1-bb69-47c3-ab57-013d873ed2c9",
+    "section": "Code Runner",
+    "timestamp": "2025-10-13T15:47:44.681324",
+    "score": 0.0,
+    "details": [
+      {
+        "q": "Check if element in list",
+        "score": 0
+      },
+      {
+        "q": "Create list of squares 1 to 5",
+        "score": 0
+      },
+      {
+        "q": "Print 'Hello' 3 times",
+        "score": 0
+      },
+      {
+        "q": "Check if string is palindrome",
+        "score": 0
+      },
+      {
+        "q": "Check if number is even",
+        "score": 0
+      }
+    ]
+  },
+  {
+    "id": "c2a6eebe-17f6-4551-8a6a-9c4de596b5a8",
+    "section": "Pseudocode",
+    "timestamp": "2025-10-13T15:48:04.475885",
+    "score": 4.0,
+    "details": [
+      {
+        "q": "Reverse a string",
+        "selected": "For i=length downto 1 print char[i]",
+        "correct": "For i=length downto 1 print char[i]",
+        "score": 1
+      },
+      {
+        "q": "Find smallest in array",
+        "selected": "Loop check",
+        "correct": "min=a[0] For each element if element<min min=element",
+        "score": 0
+      },
+      {
+        "q": "Find power a^b",
+        "selected": "result=1 For i=1 to b result*=a",
+        "correct": "result=1 For i=1 to b result*=a",
+        "score": 1
+      },
+      {
+        "q": "Swap two numbers",
+        "selected": "temp=a a=b b=temp",
+        "correct": "temp=a a=b b=temp",
+        "score": 1
+      },
+      {
+        "q": "Find average of numbers",
+        "selected": "sum=0 For each num sum+=num avg=sum/n",
+        "correct": "sum=0 For each num sum+=num avg=sum/n",
+        "score": 1
+      }
+    ]
+  }
+]

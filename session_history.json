@@ -1,0 +1,39 @@
+[
+  {
+    "id": "1ab6a210-637d-40c8-8bc9-807edd598cef",
+    "type": "practice",
+    "timestamp": "2025-10-12T07:08:54.491095",
+    "open_avg": 33.062017583888625,
+    "mcq_score": 0,
+    "coding_score": 0,
+    "time_penalty": 0,
+    "details": [
+      {
+        "question": "Explain the difference between an array and a linked list. When would you choose one over the other?",
+        "answer": "array is fixed size and linear data strcture and linked list is for add , delete and insertion of elements , no wastage of memory in array its wastage of memeroy will take place ",
+        "score": 33.062017583888625,
+        "breakdown": {
+          "similarity": 0.25047824178498806,
+          "keyword_score": 0.42857142857142855
+        },
+        "topic": "Data Structures"
+      }
+    ],
+    "readiness": 11.571706154361019
+  },
+  {
+    "id": "a846a038-6da6-44e6-bbe0-ff5777df68f6",
+    "type": "code",
+    "timestamp": "2025-10-12T07:10:20.898893",
+    "open_avg": 0,
+    "mcq_score": 0,
+    "coding_score": 100.0,
+    "time_penalty": 0,
+    "details": {
+      "problem": "Sum of two numbers",
+      "passed": 2,
+      "total": 2
+    },
+    "readiness": 35.0
+  }
+]
