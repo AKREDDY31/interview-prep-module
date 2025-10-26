@@ -1,64 +1,3 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import json, os, uuid, random, time
-from datetime import datetime
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import plotly.express as px
-
-# ---- Modern page styling ----
-st.set_page_config(
-    page_title="Interview Preparation Platform",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-st.markdown("""
-<style>
-.big-title {
-    text-align:center;
-    color:#5612c6;
-    font-weight:800;
-    font-size:2.8rem;
-    margin-top:24px;
-    margin-bottom:8px;
-    letter-spacing: 0.03em;
-}
-.subtitle {
-    text-align:center;
-    color:#444B5A;
-    font-size:1.2rem;
-    margin-bottom:22px;
-}
-.cardy {
-    background: linear-gradient(120deg,#f3f5fa 60%, #e4e6fb 100%);
-    border-left: 6px solid #5b21b6;
-    border-radius: 16px;
-    box-shadow: 0 2px 18px #2222;
-    padding: 28px 18px 18px 26px;
-    margin-bottom: 26px;
-}
-.cardy-title {
-    font-size:1.23rem;
-    font-weight:800;
-    color:#7c3aed;
-    margin-bottom:16px;
-}
-.cardy-li {
-    font-size:1.06rem;
-    color:#333;
-    margin-bottom:7px !important;
-    line-height:1.57em !important;
-}
-@media (max-width: 800px) {
-    .big-title { font-size:2rem; }
-    .subtitle { font-size:1.01rem; }
-    .cardy { padding: 18px 10px 12px 12px; }
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ---------------------- Your QUESTION_BANK goes here! -------------------
 QUESTION_BANK ={
     "Practice": {
         "Aptitude": {
@@ -543,6 +482,225 @@ QUESTION_BANK ={
         ]
     }
 },
+"MCQ Quiz": {
+    "Data Structures": {
+        "Easy": [
+            {"q": "What data structure uses LIFO?", "options": ["Queue", "Stack", "Array", "Tree"], "a": "Stack"},
+            {"q": "Which is used for BFS in graphs?", "options": ["Stack", "Queue", "Heap", "List"], "a": "Queue"},
+            {"q": "What is the time complexity of push in stack?", "options": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "a": "O(1)"},
+            {"q": "Which can grow or shrink in size?", "options": ["Array", "Linked List", "Static Array", "Set"], "a": "Linked List"},
+            {"q": "Which data structure is used for recursion?", "options": ["Array", "Queue", "Stack", "Linked List"], "a": "Stack"},
+            {"q": "Which structure supports FIFO?", "options": ["Stack", "Queue", "Tree", "Graph"], "a": "Queue"},
+            {"q": "What is the degree of a leaf node?", "options": ["1", "2", "0", "Depends"], "a": "0"},
+            {"q": "What module in Python has heap support?", "options": ["heapq", "queue", "tree", "math"], "a": "heapq"},
+            {"q": "Which operation gets value without removing it?", "options": ["pop", "peek", "push", "insert"], "a": "peek"},
+            {"q": "Which is self-balancing tree?", "options": ["Binary Search Tree", "AVL Tree", "B-Tree", "Trie"], "a": "AVL Tree"},
+            {"q": "What is the array index of first element?", "options": ["1", "0", "-1", "None"], "a": "0"},
+            {"q": "Which of these is not linear structure?", "options": ["Queue", "Stack", "Tree", "Array"], "a": "Tree"},
+            {"q": "What is the maximum children in binary tree?", "options": ["1", "2", "3", "4"], "a": "2"},
+            {"q": "Which in-order traversal order?", "options": ["left-root-right", "root-left-right", "right-left-root", "left-right-root"], "a": "left-root-right"},
+            {"q": "What does a hash table use?", "options": ["Sorting", "Hash function", "Queue", "Stack"], "a": "Hash function"}
+        ],
+        "Medium": [
+    {"q":"Which traversal is: root-right-left?", "options":["Inorder", "Preorder", "Postorder", "Reverse Preorder"],"a":"Reverse Preorder"},
+    {"q":"Best case for searching in binary search tree?", "options":["O(1)", "O(log n)", "O(n)", "O(n log n)"],"a":"O(1)"},
+    {"q":"Which is not a self-balancing tree?", "options":["AVL", "Red-Black", "Heap", "Splay"],"a":"Heap"},
+    {"q":"What is the in-order successor of 15 in BST below 10,15,20?", "options":["10", "15", "20", "None"],"a":"20"},
+    {"q":"Which DS is ideal for undo operations?", "options":["Stack", "Queue", "Tree", "Set"],"a":"Stack"},
+    {"q":"Hash table collisions handled by?", "options":["Chaining", "Splicing", "Branching", "Listing"],"a":"Chaining"},
+    {"q":"Maximum nodes in binary tree of height h?", "options":["2^h - 1", "h^2", "h", "2*h"],"a":"2^h - 1"},
+    {"q":"Which finds shortest path in graph?", "options":["BFS", "DFS", "Dijkstra", "Greedy"],"a":"Dijkstra"},
+    {"q":"Which DS for implementing recursion?", "options":["Stack", "Heap", "Table", "List"],"a":"Stack"},
+    {"q":"Which traversal uses queue?", "options":["Inorder", "Level-order", "Preorder", "Postorder"],"a":"Level-order"},
+    {"q":"Which heap is used for priority queue?", "options":["Binary Heap", "AVL", "B-Tree", "Hash"],"a":"Binary Heap"},
+    {"q":"Deque allows insertion at?", "options":["Both ends", "Right only", "Left only", "Middle only"],"a":"Both ends"},
+    {"q":"Circular queue differs from linear in?", "options":["Wraps around", "Has pointers", "No difference", "Needs stack"],"a":"Wraps around"},
+    {"q":"What DS to check palindromes efficiently?", "options":["Deque", "Queue", "Stack", "List"],"a":"Deque"},
+    {"q":"Find third minimum in unsorted array?", "options":["Sort and pick", "Hash then pick", "Tree traversal", "Binary search"],"a":"Sort and pick"}
+],
+"Hard": [
+    {"q":"What is auxiliary space for merge sort?", "options":["O(n)", "O(1)", "O(log n)", "O(n log n)"],"a":"O(n)"},
+    {"q":"Height of AVL tree with 7 nodes?", "options":["3", "2", "4", "5"],"a":"3"},
+    {"q":"Trie DS is best for?", "options":["String retrieval", "Number sorting", "Heap implementation", "Tree traversal"],"a":"String retrieval"},
+    {"q":"Sparse matrix DS saves?", "options":["Space", "Time", "CPU", "Disk"],"a":"Space"},
+    {"q":"What is amortized complexity of dynamic array append?", "options":["O(1)", "O(n)", "O(log n)", "O(n^2)"],"a":"O(1)"},
+    {"q":"Which of these is not minimum spanning tree algo?", "options":["Kruskal's", "Prim's", "Dijkstra's", "Boruvka's"],"a":"Dijkstra's"},
+    {"q":"Complexity for inserting nth element in linked list?", "options":["O(n)", "O(1)", "O(log n)", "O(2n)"],"a":"O(n)"},
+    {"q":"Red-black tree property:", "options":["No two red nodes can be adjacent", "Exactly two black nodes per path", "Every leaf must be red", "Root must be black"],"a":"No two red nodes can be adjacent"},
+    {"q":"Which is *not* true about adjacency list?", "options":["Takes less space", "Fast for sparse graph", "Inefficient for dense", "Is always slower than matrix"],"a":"Is always slower than matrix"},
+    {"q":"DS used in backtracking algorithms?", "options":["Stack", "Heap", "Priority Queue", "Graph"],"a":"Stack"},
+    {"q":"In B-trees, all leaves are at:", "options":["Same depth", "Root", "Random levels", "Level 1"],"a":"Same depth"},
+    {"q":"DS for file directory structure?", "options":["Tree", "Stack", "Heap", "Array"],"a":"Tree"},
+    {"q":"Which supports fast ordered insert/removal?", "options":["Balanced BST", "Hash", "Queue", "Stack"],"a":"Balanced BST"},
+    {"q":"If stack size is n, what is max number of pops for n pushes?", "options":["n", "2n", "n^2", "Infinite"],"a":"n"},
+    {"q":"Select non-recursive sorting algorithm:", "options":["Heap Sort", "Merge Sort", "Quick Sort", "Bubble Sort"],"a":"Bubble Sort"}
+]
+
+    },
+    "SQL": {
+        "Easy": [
+            {"q": "What does SQL stand for?", "options": ["Structured Query Language", "Simple Query Language", "Server Query Language", "Standard Query Language"], "a": "Structured Query Language"},
+            {"q": "Which clause filters results?", "options": ["WHERE", "SELECT", "FROM", "ORDER BY"], "a": "WHERE"},
+            {"q": "What type is used to store integers?", "options": ["VARCHAR", "INT", "TEXT", "DATE"], "a": "INT"},
+            {"q": "Which command adds record to table?", "options": ["INSERT", "ADD", "APPEND", "UPDATE"], "a": "INSERT"},
+            {"q": "Which is aggregate function?", "options": ["COUNT", "WHERE", "ORDER", "LIMIT"], "a": "COUNT"},
+            {"q": "Which keyword joins two tables?", "options": ["JOIN", "SELECT", "MERGE", "GROUP"], "a": "JOIN"},
+            {"q": "What is a primary key?", "options": ["Unique identifier", "Null value", "Default value", "Duplicate value"], "a": "Unique identifier"},
+            {"q": "Which operator selects all NOT equal values?", "options": ["<>", "<", ">", "="], "a": "<>"},
+            {"q": "Which keyword sorts results?", "options": ["ORDER BY", "GROUP BY", "SORT", "WHERE"], "a": "ORDER BY"},
+            {"q": "How to remove duplicates?", "options": ["SELECT DISTINCT", "UNIQUE", "REMOVE DUPLICATE", "CLEAN"], "a": "SELECT DISTINCT"},
+            {"q": "Which constraint is for unique values?", "options": ["UNIQUE", "FOREIGN KEY", "PRIMARY KEY", "CHECK"], "a": "UNIQUE"},
+            {"q": "Which type is used for date?", "options": ["DATE", "VARCHAR", "TIME", "DATETIME"], "a": "DATE"},
+            {"q": "How to delete a table?", "options": ["DROP", "DELETE", "REMOVE", "DESTROY"], "a": "DROP"},
+            {"q": "Which command modifies table?", "options": ["ALTER", "MODIFY", "CHANGE", "EDIT"], "a": "ALTER"},
+            {"q": "Which clause groups rows?", "options": ["GROUP BY", "ORDER BY", "WHERE", "SORT"], "a": "GROUP BY"}
+        ],
+        "Medium": [
+    {"q":"Subquery returns?", "options":["Single/multiple records", "Always one record", "Only tables", "No records"],"a":"Single/multiple records"},
+    {"q":"Result of SELECT 2+2;", "options":["4", "22", "0", "Error"],"a":"4"},
+    {"q":"Which clause groups data?", "options":["GROUP BY", "ORDER BY", "WHERE", "HAVING"],"a":"GROUP BY"},
+    {"q":"Foreign key refers to?", "options":["Primary key in another table", "Same table", "Unique key", "All keys"],"a":"Primary key in another table"},
+    {"q":"Which command is DDL?", "options":["CREATE", "INSERT", "DELETE", "SELECT"],"a":"CREATE"},
+    {"q":"Which isolation level highest?", "options":["Serializable", "Repeatable Read", "Read Committed", "Read Uncommitted"],"a":"Serializable"},
+    {"q":"To remove all rows without deleting table?", "options":["TRUNCATE", "DROP", "DELETE", "REMOVE"],"a":"TRUNCATE"},
+    {"q":"Which finds null values?", "options":["IS NULL", "IS NOT NULL", "FIND NULL", "NULL"],"a":"IS NULL"},
+    {"q":"What does HAVING filter?", "options":["Groups", "Rows", "Columns", "Tables"],"a":"Groups"},
+    {"q":"Which operator for pattern match?", "options":["LIKE", "IN", "=", "!="],"a":"LIKE"},
+    {"q":"Which returns only different values?", "options":["DISTINCT", "GROUP BY", "UNIQUE", "FILTER"],"a":"DISTINCT"},
+    {"q":"Which constraint allows only positive numbers?", "options":["CHECK", "UNIQUE", "DEFAULT", "PRIMARY"],"a":"CHECK"},
+    {"q":"What is output of SELECT COUNT(*) FROM table WHERE 1=0?", "options":["0", "1", "Error", "All rows"],"a":"0"},
+    {"q":"Which statement creates index?", "options":["CREATE INDEX", "MAKE INDEX", "NEW INDEX", "ALTER INDEX"],"a":"CREATE INDEX"},
+    {"q":"Which returns all rows from first table matched in second (or null)?", "options":["LEFT JOIN", "RIGHT JOIN", "INNER JOIN", "OUTER JOIN"],"a":"LEFT JOIN"}
+],
+"Hard": [
+    {"q":"Which is true about normalization?", "options":["Reduces redundancy", "Slows access", "Creates more tables", "None"],"a":"Reduces redundancy"},
+    {"q":"What is ACID property for?", "options":["Transactions", "Tables", "Views", "Indexes"],"a":"Transactions"},
+    {"q":"Which function returns current date?", "options":["CURDATE()", "NOW()", "SYSDATE()", "TODAY()"],"a":"CURDATE()"},
+    {"q":"What result: SELECT null + 5;", "options":["null", "5", "0", "Error"],"a":"null"},
+    {"q":"SQL injection prevented by?", "options":["Prepared statements", "Input validation", "Escaping", "All of these"],"a":"All of these"},
+    {"q":"To copy all structure but no data?", "options":["CREATE TABLE ... LIKE", "INSERT", "SELECT INTO", "ALTER"],"a":"CREATE TABLE ... LIKE"},
+    {"q":"Window function is:", "options":["ROW_NUMBER()", "GROUP BY", "ORDER BY", "SUM"],"a":"ROW_NUMBER()"},
+    {"q":"What restricts value in column?", "options":["CHECK", "DEFAULT", "FOREIGN", "GROUP"],"a":"CHECK"},
+    {"q":"Which type of join returns all records when there is a match in either?", "options":["FULL OUTER JOIN", "CROSS JOIN", "Natural Join", "LEFT JOIN"],"a":"FULL OUTER JOIN"},
+    {"q":"Which keyword for table alias?", "options":["AS", "LIKE", "WITH", "USING"],"a":"AS"},
+    {"q":"Which prevents duplicate rows?", "options":["UNIQUE", "NONE", "MULTIPLE", "PRIMARY"],"a":"UNIQUE"},
+    {"q":"How to remove a table and its data permanently?", "options":["DROP", "DELETE", "TRUNCATE", "CUT"],"a":"DROP"},
+    {"q":"Which type of key is not a candidate key?", "options":["Super key", "Foreign key", "Primary key", "Unique key"],"a":"Foreign key"},
+    {"q":"Which is not supported in SQL?", "options":["Procedures", "Functions", "Inheritance", "Triggers"],"a":"Inheritance"},
+    {"q":"Which returns the nth highest salary?", "options":["LIMIT, OFFSET", "GROUP BY", "ORDER BY", "MIN"],"a":"LIMIT, OFFSET"}
+]
+
+    },
+    "Computer Networks": {
+        "Easy": [
+            {"q": "Which device connects two networks?", "options": ["Switch", "Router", "Hub", "Bridge"], "a": "Router"},
+            {"q": "IP stands for?", "options": ["Internet Protocol", "Internal Protocol", "Input Protocol", "Interconnect Protocol"], "a": "Internet Protocol"},
+            {"q": "Which is not a layer in OSI model?", "options": ["Routing", "Transport", "Data Link", "Presentation"], "a": "Routing"},
+            {"q": "TCP is connection ____ protocol.", "options": ["oriented", "less", "neutral", "random"], "a": "oriented"},
+            {"q": "Which device amplifies signal?", "options": ["Repeater", "Hub", "Modem", "Server"], "a": "Repeater"},
+            {"q": "Which protocol sends email?", "options": ["SMTP", "FTP", "HTTP", "POP"], "a": "SMTP"},
+            {"q": "Which of these is a LAN protocol?", "options": ["Ethernet", "ATM", "MPLS", "PPP"], "a": "Ethernet"},
+            {"q": "Full form of MAC in networks?", "options": ["Media Access Control", "Medium Access Carrier", "Manual Access Code", "Main Area Control"], "a": "Media Access Control"},
+            {"q": "Which is not wireless?", "options": ["WiFi", "Ethernet", "Bluetooth", "Infrared"], "a": "Ethernet"},
+            {"q": "Which address is physical?", "options": ["MAC", "IP", "Subnet", "DNS"], "a": "MAC"},
+            {"q": "Which port for HTTP?", "options": ["80", "23", "25", "21"], "a": "80"},
+            {"q": "DNS translates?", "options": ["Domain to IP", "IP to MAC", "MAC to IP", "None"], "a": "Domain to IP"},
+            {"q": "Which is not an application layer protocol?", "options": ["FTP", "DNS", "HTTP", "TCP"], "a": "TCP"},
+            {"q": "DSL is a type of?", "options": ["Broadband", "Ethernet", "WiFi", "Switch"], "a": "Broadband"},
+            {"q": "Which device splits bandwidth?", "options": ["Hub", "Switch", "Router", "Repeater"], "a": "Hub"}
+        ],
+        "Medium": [
+    {"q":"Which protocol for file transfer?", "options":["FTP", "SMTP", "HTTP", "POP"],"a":"FTP"},
+    {"q":"Which is not a switching method?", "options":["Store-and-forward", "Packet", "Circuit", "Signal"],"a":"Signal"},
+    {"q":"What is TTL in networking?", "options":["Time to Live", "Total Transit Level", "Transit Time Limit", "Time to Leave"],"a":"Time to Live"},
+    {"q":"Which assigns IP automatically?", "options":["DHCP", "ICMP", "HTTP", "DNS"],"a":"DHCP"},
+    {"q":"Max size of IPv4 address?", "options":["32 bits", "64 bits", "128 bits", "16 bits"],"a":"32 bits"},
+    {"q":"Which is not for congestion control?", "options":["TCP", "UDP", "ICMP", "Router"],"a":"UDP"},
+    {"q":"Which layer splits/assembles messages?", "options":["Transport", "Presentation", "Physical", "Session"],"a":"Transport"},
+    {"q":"IPv6 uses?", "options":["128 bits", "64 bits", "32 bits", "8 bits"],"a":"128 bits"},
+    {"q":"Which prevents loops in networks?", "options":["Spanning Tree", "Ping", "Traceroute", "ICMP"],"a":"Spanning Tree"},
+    {"q":"Which protocol for encrypted web?", "options":["HTTPS", "FTP", "Telnet", "SMTP"],"a":"HTTPS"},
+    {"q":"Which is not valid IP?", "options":["256.1.1.1", "192.168.0.1", "8.8.8.8", "172.16.254.1"],"a":"256.1.1.1"},
+    {"q":"Routing Table stores?", "options":["Routes", "MACs", "Switches", "Packets"],"a":"Routes"},
+    {"q":"CRC checks for?", "options":["Errors", "Congestion", "Routing", "Speed"],"a":"Errors"},
+    {"q":"Which protocol finds MAC from IP?", "options":["ARP", "FTP", "DNS", "HTTP"],"a":"ARP"},
+    {"q":"SMTP transfers?", "options":["Emails", "Webpages", "Files", "FTP packets"],"a":"Emails"}
+],
+"Hard": [
+    {"q":"OSI model has how many layers?", "options":["7", "6", "8", "10"],"a":"7"},
+    {"q":"Which protocol detects errors and retransmits?", "options":["TCP", "UDP", "FTP", "SMTP"],"a":"TCP"},
+    {"q":"Which is not bandwidth sharing?", "options":["TDM", "FDM", "CDMA", "FDMA"],"a":"CDMA"},
+    {"q":"BGP stands for?", "options":["Border Gateway Protocol", "Backbone Gateway Protocol", "Basic Gateway Protocol", "Best Gateway Protocol"],"a":"Border Gateway Protocol"},
+    {"q":"ICMP is used for?", "options":["Reporting errors", "Email", "FTP", "DHCP"],"a":"Reporting errors"},
+    {"q":"Hop count is used in?", "options":["Routing", "Switching", "Broadcasting", "Filtering"],"a":"Routing"},
+    {"q":"Bridge operates at which OSI layer?", "options":["Data Link", "Network", "Transport", "Session"],"a":"Data Link"},
+    {"q":"Firewall controls?", "options":["Access", "Routing", "Bandwidth", "Encryption"],"a":"Access"},
+    {"q":"Which is not multicast?", "options":["224.0.0.1", "239.255.255.250", "255.255.255.255", "224.0.0.9"],"a":"255.255.255.255"},
+    {"q":"Ping uses?", "options":["ICMP", "TCP", "UDP", "IP"],"a":"ICMP"},
+    {"q":"Which prevents packet sniffing?", "options":["Encryption", "Routing", "Broadcast", "Switch"],"a":"Encryption"},
+    {"q":"Leaky bucket is for?", "options":["Traffic shaping", "Routing", "Encryption", "Loopback"],"a":"Traffic shaping"},
+    {"q":"SSL certificate for?", "options":["Authentication", "Error correction", "Broadcast", "Noise removal"],"a":"Authentication"},
+    {"q":"VPN provides?", "options":["Secure suptunnel", "Email", "DNS", "Switching"],"a":"Secure suptunnel"},
+    {"q":"Which spreads a single communication signal over a wide frequency band?", "options":["Spread Spectrum", "Baseband", "Narrowband", "Laser"],"a":"Spread Spectrum"}
+]
+
+    },
+    "Operating System": {
+        "Easy": [
+            {"q": "Which manages system hardware?", "options": ["Kernel", "Shell", "User", "Driver"], "a": "Kernel"},
+            {"q": "Which of these is not an OS?", "options": ["Windows", "Linux", "Oracle", "MacOS"], "a": "Oracle"},
+            {"q": "Which command lists files in UNIX?", "options": ["ls", "dir", "copy", "list"], "a": "ls"},
+            {"q": "Page replacement is used in?", "options": ["Virtual memory", "CPU scheduling", "Disk scheduling", "Interrupts"], "a": "Virtual memory"},
+            {"q": "Which file system used in Windows?", "options": ["NTFS", "EXT2", "FAT32", "XFS"], "a": "NTFS"},
+            {"q": "Main function of scheduler?", "options": ["Process scheduling", "Memory access", "I/O read", "Data encryption"], "a": "Process scheduling"},
+            {"q": "Which is not a type of OS?", "options": ["Batch", "Real-time", "Multimedia", "Time-sharing"], "a": "Multimedia"},
+            {"q": "Which memory is volatile?", "options": ["RAM", "ROM", "SSD", "HDD"], "a": "RAM"},
+            {"q": "Which is not interrupt type?", "options": ["Software", "Hardware", "Internal", "Linear"], "a": "Linear"},
+            {"q": "Which allows multiple tasks?", "options": ["Multiprogramming", "Batch", "Monolithic", "None"], "a": "Multiprogramming"},
+            {"q": "What is a process?", "options": ["Program in execution", "Memory address", "Command", "Input"], "a": "Program in execution"},
+            {"q": "Which is NOT system software?", "options": ["Compiler", "Text editor", "OS", "Assembler"], "a": "Text editor"},
+            {"q": "Which is job scheduling algorithm?", "options": ["FCFS", "LSA", "LIFO", "RTS"], "a": "FCFS"},
+            {"q": "Deadlock means?", "options": ["Process wait indefinitely", "Program runs forever", "Memory access error", "None"], "a": "Process wait indefinitely"},
+            {"q": "Which uses round robin scheduling?", "options": ["Time-sharing", "Batch", "Multiprocessing", "Microkernel"], "a": "Time-sharing"}
+        ],
+        "Medium": [
+    {"q":"What is thrashing?", "options":["Excessive paging", "Deadlock", "Starvation", "Spooling"],"a":"Excessive paging"},
+    {"q":"Swapping means?", "options":["Move process from memory to disk", "Exchange registers", "Switch files", "Power cycle"],"a":"Move process from memory to disk"},
+    {"q":"Semaphore used for?", "options":["Process synchronization", "Paging", "Sheduled access", "Interrupts"],"a":"Process synchronization"},
+    {"q":"What is fork()?", "options":["Process creation", "Memory allocation", "Swap", "Thread making"],"a":"Process creation"},
+    {"q":"Which supports multithreading?", "options":["Windows NT", "MS-DOS", "CP/M", "None"],"a":"Windows NT"},
+    {"q":"Page fault on?", "options":["Memory not in RAM", "CPU failure", "Disk crash", "Power loss"],"a":"Memory not in RAM"},
+    {"q":"RR (Round Robin) is best for?", "options":["Time-sharing", "Batch jobs", "Real-time", "Multiprogramming"],"a":"Time-sharing"},
+    {"q":"Mutex differs from counting semaphore in?", "options":["Binary value", "Counting", "Recursion", "Size"],"a":"Binary value"},
+    {"q":"OS that responds to inputs instantly is?", "options":["Real-Time", "Batch", "Time-Sharing", "Distributed"],"a":"Real-Time"},
+    {"q":"Preemptive Scheduling lets?", "options":["Interrupt running process", "Finish process first", "Kill process", "Run lower priority only"],"a":"Interrupt running process"},
+    {"q":"Which does not need memory management?", "options":["Microcontroller", "Server", "Desktop", "Laptop"],"a":"Microcontroller"},
+    {"q":"Disk scheduling with least seek?", "options":["SSTF", "FIFO", "LOOK", "C-SCAN"],"a":"SSTF"},
+    {"q":"Idle process is?", "options":["Runs when no other process", "Has highest priority", "Never runs", "OS update"],"a":"Runs when no other process"},
+    {"q":"What is zombie process?", "options":["Terminated", "Running", "Blocked", "Waiting"],"a":"Terminated"},
+    {"q":"Which is not process state?", "options":["Stalled", "Ready", "Running", "Terminated"],"a":"Stalled"}
+],
+"Hard": [
+    {"q":"Deadlock recovery can be by?", "options":["Process termination", "Ignoring", "Increase memory", "Preemption"],"a":"Process termination"},
+    {"q":"Belady’s Anomaly relates to?", "options":["Page replacement", "Disk scheduling", "CPU scheduling", "Semaphore"],"a":"Page replacement"},
+    {"q":"Which is unsafe state?", "options":["Could lead to deadlock", "No free memory", "Task starved", "Many processes"],"a":"Could lead to deadlock"},
+    {"q":"CPU burst means?", "options":["Process executing", "CPU idle", "Memory wait", "Disk access"],"a":"Process executing"},
+    {"q":"Which scheduling is non-preemptive?", "options":["FCFS", "Round Robin", "SRTF", "Priority"],"a":"FCFS"},
+    {"q":"Paging and segmentation both?", "options":["Divide memory", "Increase speed", "Prevent deadlock", "Reduce context switch"],"a":"Divide memory"},
+    {"q":"Thrashing can be reduced by?", "options":["Adding memory", "Process kill", "Increase CPU", "Frequent I/O"],"a":"Adding memory"},
+    {"q":"Which is not file allocation?", "options":["Direct", "Linked", "Indexed", "Recursive"],"a":"Recursive"},
+    {"q":"Boot sector stores?", "options":["Loader code", "User files", "Registry", "Drivers"],"a":"Loader code"},
+    {"q":"Which is not security attack?", "options":["Zombie process", "Worm", "Virus", "Trojan"],"a":"Zombie process"},
+    {"q":"Multi-core helps with?", "options":["Parallelism", "Deadlock", "Paging", "Starvation"],"a":"Parallelism"},
+    {"q":"Banker's algorithm helps with?", "options":["Deadlock avoidance", "Paging", "Cache miss", "Stack overflow"],"a":"Deadlock avoidance"},
+    {"q":"Which is *not* page replacement algo?", "options":["FIFO", "LRU", "SCAN", "Optimal"],"a":"SCAN"},
+    {"q":"Protection ring in OS is?", "options":["Security privilege levels", "Paging layer", "Hard disk rings", "File sectors"],"a":"Security privilege levels"},
+    {"q":"Dirty bit is used for?", "options":["Page modified tracking", "CPU caching", "Directory tree", "Prioritizing process"],"a":"Page modified tracking"}
+]
+
+    }
+},
+
 "Code Runner": {
     "Easy": [
         {"q": "Write a function to return the factorial of a number n.\nTest Case 1: n=5, output=120\nTest Case 2: n=1, output=1", "a": ""},
@@ -1050,355 +1208,3 @@ QUESTION_BANK ={
     ]
 }
 }
-# ------------------------------------------------------------------------
-
-TOPICS = {
-    k: list(v.keys()) for k, v in QUESTION_BANK.items() if isinstance(v, dict)
-}
-
-def tfidf_similarity(a, b):
-    if not a or not b or not a.strip() or not b.strip():
-        return 0.0
-    try:
-        v = TfidfVectorizer()
-        tfidf = v.fit_transform([a, b])
-        sim = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
-        return round(min(sim * 100, 100), 2)  # cap at 100
-    except:
-        return 0.0
-
-def pick_questions(section, topic, diff, count):
-    try:
-        pool = []
-        if section in QUESTION_BANK and topic in QUESTION_BANK[section] and diff in QUESTION_BANK[section][topic]:
-            pool = QUESTION_BANK[section][topic][diff].copy()
-        random.shuffle(pool)
-        while len(pool) < count and pool:
-            pool.append(random.choice(pool))
-        return pool[:count]
-    except Exception:
-        return []
-
-def load_history():
-    if os.path.exists("history.json"):
-        try:
-            with open("history.json", "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
-            return []
-    return []
-
-def save_history(data):
-    with open("history.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, default=str)
-
-def record_result(section, topic, score, details):
-    h = load_history()
-    h.append({
-        "id": str(uuid.uuid4()),
-        "section": section,
-        "topic": topic,
-        "timestamp": datetime.utcnow().isoformat(),
-        "score": round(float(score), 2) if score is not None else 0,
-        "details": details
-    })
-    save_history(h)
-
-st.sidebar.markdown("""
-<div class="cardy">
-<div class="cardy-title">🛠️ Instructions & Tips</div>
-<ul style="padding-left:18px;margin-top:-8px;">
-<li class="cardy-li">Select section, topic & difficulty, then <b>Start Test</b>.</li>
-<li class="cardy-li">Timer begins after you start.</li>
-<li class="cardy-li">Stay on this tab (do not switch browser tabs).</li>
-<li class="cardy-li">Use Previous/Next/Save.</li>
-<li class="cardy-li">Submit Test 🏁 anytime.</li>
-<li class="cardy-li">Review analytics after each test.</li>
-</ul>
-</div>
-""", unsafe_allow_html=True)
-
-if "mode" not in st.session_state:
-    st.session_state.mode = "main"
-
-if st.session_state.mode == "main":
-    st.markdown("<div class='big-title'>Interview Preparation Platform</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>Interactive Interview Practice and Analytics Portal</div>", unsafe_allow_html=True)
-
-    section_tabs = st.tabs([
-        "🧠 Practice", "🎤 Mock Interview", "📝 MCQ Quiz", "💻 Code Runner", "📄 Pseudocode",
-        "📈 Results", "📊 Analytics", "🕓 History"
-    ])
-
-    with section_tabs[0]:
-        if "Practice" in TOPICS and TOPICS["Practice"]:
-            topic = st.selectbox("Select Topic", TOPICS["Practice"], key="practice_topic")
-            diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="practice_diff")
-            count = st.slider("Number of Questions", 1, 15, 5, key="practice_count")
-            if st.button("▶ Start Practice", key="practice_start"):
-                qs = pick_questions("Practice", topic, diff, count)
-                st.session_state.exam = {
-                    "section": "Practice",
-                    "topic": topic,
-                    "diff": diff,
-                    "qs": qs,
-                    "answers": [""]*len(qs),
-                    "idx": 0,
-                    "start": time.time()
-                }
-                st.session_state.mode = "exam"
-                st.experimental_rerun()
-        else:
-            st.info("No topics available for Practice. Please fill the QUESTION_BANK.")
-
-    with section_tabs[1]:
-        if "Mock Interview" in TOPICS and TOPICS["Mock Interview"]:
-            topic = st.selectbox("Interview Type", TOPICS["Mock Interview"], key="mock_type")
-            diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="mock_diff")
-            count = st.slider("Number of Questions", 1, 15, 5, key="mock_count")
-            if st.button("▶ Start Mock Interview", key="mock_start"):
-                qs = pick_questions("Mock Interview", topic, diff, count)
-                st.session_state.exam = {
-                    "section":"Mock Interview",
-                    "topic":topic,
-                    "diff":diff,
-                    "qs":qs,
-                    "answers":[""]*len(qs),
-                    "idx":0,
-                    "start":time.time()
-                }
-                st.session_state.mode = "exam"
-                st.experimental_rerun()
-        else:
-            st.info("No topics available for Mock Interview. Please fill the QUESTION_BANK.")
-
-    with section_tabs[2]:
-        if "MCQ Quiz" in TOPICS and TOPICS["MCQ Quiz"]:
-            topic = st.selectbox("Quiz Topic", TOPICS["MCQ Quiz"], key="mcq_topic")
-            diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="mcq_diff")
-            count = st.slider("Number of MCQs", 1, 15, 5, key="mcq_count")
-            if st.button("▶ Start MCQ Quiz", key="mcq_start"):
-                qs = pick_questions("MCQ Quiz", topic, diff, count)
-                st.session_state.exam = {
-                    "section":"MCQ Quiz",
-                    "topic":topic,
-                    "diff":diff,
-                    "qs":qs,
-                    "answers":[""]*len(qs),
-                    "idx":0,
-                    "start":time.time()
-                }
-                st.session_state.mode = "exam"
-                st.experimental_rerun()
-        else:
-            st.info("No topics available for MCQ Quiz. Please fill the QUESTION_BANK.")
-
-    with section_tabs[3]:
-        if "Code Runner" in TOPICS and TOPICS["Code Runner"]:
-            topic = TOPICS["Code Runner"][0]
-            diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key="code_diff")
-            count = st.slider("Number of Code Questions", 1, 15, 5, key="code_count")
-            if st.button("▶ Start Code Practice", key="code_start"):
-                qs = pick_questions("Code Runner", topic, diff, count)
-                st.session_state.exam = {
-                    "section":"Code Runner",
-                    "topic":topic,
-                    "diff":diff,
-                    "qs":qs,
-                    "answers":[""]*len(qs),
-                    "idx":0,
-                    "start":time.time()
-                }
-                st.session_state.mode = "exam"
-                st.experimental_rerun()
-        else:
-            st.info("No questions available for Code Runner. Please fill the QUESTION_BANK.")
-
-    with section_tabs[4]:
-        if "Pseudocode" in TOPICS and TOPICS["Pseudocode"]:
-            topic = TOPICS["Pseudocode"][0]
-            diff = st.selectbox("Difficulty", ["Easy","Medium","Hard"], key="pseudo_diff")
-            count = st.slider("Number of Pseudocode Questions", 1, 15, 5, key="pseudo_count")
-            if st.button("▶ Start Pseudocode", key="pseudo_start"):
-                qs = pick_questions("Pseudocode", topic, diff, count)
-                st.session_state.exam = {
-                    "section":"Pseudocode",
-                    "topic":topic,
-                    "diff":diff,
-                    "qs":qs,
-                    "answers":[""]*len(qs),
-                    "idx":0,
-                    "start":time.time()
-                }
-                st.session_state.mode = "exam"
-                st.experimental_rerun()
-        else:
-            st.info("No questions available for Pseudocode. Please fill the QUESTION_BANK.")
-
-    # ---------- Results ----------
-    with section_tabs[5]:
-        st.subheader("📈 Results")
-        h = load_history()
-        if not h:
-            st.info("No test results found.")
-        else:
-            df = pd.DataFrame(h)
-            cols = [c for c in ["section","topic","timestamp","score"] if c in df.columns]
-            if cols:
-                st.dataframe(df[cols])
-            else:
-                st.dataframe(df)
-
-    # ---------- Analytics ----------
-    with section_tabs[6]:
-        st.subheader("📊 Analytics")
-        h = load_history()
-        if not h:
-            st.info("No data to analyze.")
-        else:
-            df = pd.DataFrame(h)
-            if "score" in df.columns and "section" in df.columns:
-                fig = px.bar(df, x="section", y="score", color="section", title="Score per Section", text_auto=True)
-                st.plotly_chart(fig, use_container_width=True)
-                avg_scores = df.groupby("section")["score"].mean().reset_index()
-                fig2 = px.pie(avg_scores, names="section", values="score", title="Strength vs Weakness")
-                st.plotly_chart(fig2, use_container_width=True)
-            else:
-                st.info("Not enough result data for analytics.")
-
-    # ---------- History ----------
-    with section_tabs[7]:
-        st.subheader("🕓 History")
-        h = load_history()
-        if not h:
-            st.info("No history found.")
-        else:
-            for rec in h[::-1]:
-                st.markdown(f"**Section:** {rec['section']} | **Topic:** {rec.get('topic','-')} | **Timestamp:** {rec['timestamp']} | **Score:** {rec['score']}")
-                if st.button(f"View Details", key=rec['id']):
-                    for d in rec.get("details", []):
-                        st.write(f"Q: {d['q']} — Score: {d.get('score', 'N/A')}")
-
-elif st.session_state.mode == "exam":
-    ex = st.session_state.get("exam", None)
-    if not ex:
-        st.error("No active test.")
-        if st.button("Return Home"):
-            st.session_state.mode = "main"
-            st.experimental_rerun()
-    else:
-        st.markdown(f"<h2 style='color:#4B0082;'>{ex['section']} — {ex['topic']} — Difficulty: {ex['diff']}</h2>", unsafe_allow_html=True)
-        total_time = 30 * 60
-
-        elapsed = int(time.time() - ex["start"])
-        remaining = max(total_time - elapsed, 0)
-        m, s = divmod(remaining, 60)
-
-        colT1, colT2 = st.columns([7, 1])
-        timer_placeholder = colT1.empty()
-        timer_placeholder.markdown(
-            f"<span style='color:{'red' if remaining <= 300 else 'green'};font-weight:bold;'>⏱ Time Left: {m:02}:{s:02}</span>",
-            unsafe_allow_html=True
-        )
-        if remaining > 0:
-            time.sleep(1)
-            st.experimental_rerun()
-        else:
-            st.warning("⏰ Time over! Submitting...")
-            details = []
-            if ex["section"] in ["Practice"]:
-                scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
-                avg = np.mean(scores) if scores else 0
-                details = [{"q": q["q"], "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
-            elif ex["section"] == "MCQ Quiz":
-                scores = []
-                for a, q in zip(ex["answers"], ex["qs"]):
-                    s = 1 if a == q["a"] else 0
-                    scores.append(s)
-                    details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
-                avg = sum(scores)
-            elif ex["section"] in ["Mock Interview","Pseudocode","Code Runner"]:
-                scores = []
-                for a, q in zip(ex["answers"], ex["qs"]):
-                    s = tfidf_similarity(a, q["a"]) if ex["section"] != "Mock Interview" else 0.0
-                    scores.append(s)
-                    details.append({"q": q["q"], "answer": a, "score": s})
-                avg = np.mean(scores) if scores else 0
-            else:
-                avg = 0
-                details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
-            record_result(ex["section"], ex.get("topic",""), avg, details)
-            del st.session_state.exam
-            st.session_state.mode = "main"
-            st.experimental_rerun()
-
-        with colT2:
-            if st.button("🏁 Submit Test"):
-                details = []
-                if ex["section"] in ["Practice"]:
-                    scores = [tfidf_similarity(a, q["a"]) for a, q in zip(ex["answers"], ex["qs"])]
-                    avg = np.mean(scores) if scores else 0
-                    details = [{"q": q["q"], "score": round(s, 2)} for q, s in zip(ex["qs"], scores)]
-                elif ex["section"] == "MCQ Quiz":
-                    scores = []
-                    for a, q in zip(ex["answers"], ex["qs"]):
-                        s = 1 if a == q["a"] else 0
-                        scores.append(s)
-                        details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
-                    avg = sum(scores)
-                elif ex["section"] in ["Mock Interview","Pseudocode","Code Runner"]:
-                    scores = []
-                    for a, q in zip(ex["answers"], ex["qs"]):
-                        s = tfidf_similarity(a, q["a"]) if ex["section"] != "Mock Interview" else 0.0
-                        scores.append(s)
-                        details.append({"q": q["q"], "answer": a, "score": s})
-                    avg = np.mean(scores) if scores else 0
-                else:
-                    avg = 0
-                    details = [{"q": q["q"], "score": 0} for q in ex["qs"]]
-                record_result(ex["section"], ex.get("topic",""), avg, details)
-                del st.session_state.exam
-                st.session_state.mode = "main"
-                st.experimental_rerun()
-
-        idx = ex["idx"]
-        q = ex["qs"][idx]
-        st.markdown(
-            f"<div style='background-color:#f9f7ff;color:#1a0441;padding:22px 15px 16px 18px;border-radius:11px;margin-bottom:12px;font-size:17.5px;font-weight:500;'><b>Q{idx+1}. {q.get('q','')}</b></div>",
-            unsafe_allow_html=True
-        )
-
-        # Dynamic question rendering for MCQs/Pseudocode MCQs
-        if ex["section"] == "MCQ Quiz" or (ex["section"] == "Pseudocode" and 'options' in q):
-            opts = q.get("options", [])
-            selected = st.radio("Select Option:", opts, index=opts.index(ex["answers"][idx]) if ex["answers"][idx] in opts else 0, key=f"ans{idx}")
-            ex["answers"][idx] = selected
-        elif ex["section"] == "Code Runner":
-            lang = st.selectbox("Language:", ["Python","Java","C++"], key=f"lang{idx}")
-            code = st.text_area("Write your code here:", value=ex["answers"][idx], height=150, key=f"ans{idx}")
-            st.info("Test Cases Example:\n" + "\n".join([line for line in q["q"].splitlines() if line.lower().startswith("test case")]))
-            ex["answers"][idx] = code
-        else:
-            ans = st.text_area("Your answer:", value=ex["answers"][idx], height=120, key=f"ans{idx}")
-            ex["answers"][idx] = ans
-
-        st.session_state.exam = ex
-
-        f1, f2, f3 = st.columns([1, 1, 1])
-        if f1.button("⬅ Previous"):
-            if idx > 0:
-                ex["idx"] -= 1
-                st.session_state.exam = ex
-                st.experimental_rerun()
-        if f2.button("Next ➡"):
-            if idx < len(ex["qs"]) - 1:
-                ex["idx"] += 1
-                st.session_state.exam = ex
-                st.experimental_rerun()
-        if f3.button("💾 Save Answer"):
-            st.success("Answer saved ✅")
-
-        st.progress((idx + 1) / len(ex["qs"]))
-        st.caption(f"Question {idx+1}/{len(ex['qs'])}")
-
-st.markdown("<div style='text-align:center;padding:10px;color:#5612c6;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
