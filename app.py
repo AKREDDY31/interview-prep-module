@@ -16,7 +16,7 @@ st.set_page_config(
 
 # ------------------------------- Files -------------------------------
 HISTORY_FILE = "history.json"
-DEFAULT_BANK={
+DEFAULT_BANK ={
     "Practice": {
         "Aptitude": {
             "Easy": [
@@ -1323,7 +1323,7 @@ if st.session_state.mode == "main":
                 "start": time.time()
             }
             st.session_state.mode = "exam"
-            st.experimental_rerun()
+            st.rerun()
             st.stop()
 
     with section_tabs[0]: setup_test("Practice", "practice")
@@ -1374,7 +1374,7 @@ elif st.session_state.mode == "exam":
         st.error("No active test.")
         if st.button("Return Home"):
             st.session_state.mode = "main"
-            st.experimental_rerun()
+            st.rerun()
             st.stop()
     else:
         ex = st.session_state.exam
@@ -1410,7 +1410,7 @@ elif st.session_state.mode == "exam":
             record_result(ex["section"], avg, details)
             del st.session_state.exam
             st.session_state.mode = "main"
-            st.experimental_rerun()
+            st.rerun()
             st.stop()
 
         if remaining == 0:
@@ -1430,7 +1430,6 @@ elif st.session_state.mode == "exam":
             f"<div style='background-color:#F0F8FF;color:#000000;padding:20px;border-radius:10px;margin-bottom:15px;font-size:18px;'><b>Q{idx+1}. {q['q']}</b></div>",
             unsafe_allow_html=True
         )
-
         if ex["section"] in ["MCQ Quiz", "Pseudocode"]:
             selected = st.radio("Select Option:", q.get("options", []), key=f"ans{idx}")
             ex["answers"][idx] = selected
@@ -1448,13 +1447,13 @@ elif st.session_state.mode == "exam":
             if idx > 0:
                 ex["idx"] -= 1
                 st.session_state.exam = ex
-                st.experimental_rerun()
+                st.rerun()
                 st.stop()
         if f2.button("Next ➡"):
             if idx < len(ex["qs"]) - 1:
                 ex["idx"] += 1
                 st.session_state.exam = ex
-                st.experimental_rerun()
+                st.rerun()
                 st.stop()
         if f3.button("💾 Save Answer"):
             st.success("Answer saved ✅")
@@ -1463,9 +1462,8 @@ elif st.session_state.mode == "exam":
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
 
         # CRITICAL: TIMER LOOP FOR AUTOTICK
-        st.experimental_rerun()
+        st.rerun()
         st.stop()
 
 # ------------------------------- Footer -------------------------------
 st.markdown("<div style='text-align:center;padding:10px;color:#4B0082;font-weight:bold;'>Developed by Anil & Team</div>", unsafe_allow_html=True)
-
