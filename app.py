@@ -1237,6 +1237,7 @@ QUESTION_BANK ={
     ]
 }
 }
+
 # -------------------------------
 # Load Question Bank
 # -------------------------------
@@ -1244,9 +1245,11 @@ try:
     if os.path.exists(QUESTION_FILE):
         with open(QUESTION_FILE, "r", encoding="utf-8") as f:
             QUESTION_BANK = json.load(f)
+            if not QUESTION_BANK:
+                st.error(f"Warning: '{QUESTION_FILE}' is empty. Please add questions.")
     else:
         QUESTION_BANK = DEFAULT_BANK
-        st.error(f"Warning: '{QUESTION_FILE}' not found. Using empty question bank.")
+        st.error(f"Warning: '{QUESTION_FILE}' not found. Using empty question bank. Please create the file.")
 except Exception as e:
     QUESTION_BANK = DEFAULT_BANK
     st.error(f"Error loading '{QUESTION_FILE}': {e}. Using empty question bank.")
@@ -1353,19 +1356,24 @@ if st.session_state.mode == "main":
 
     # Define all section tabs
     all_sections = list(QUESTION_BANK.keys())
-    tab_names = [f"🧠 {s}" if s == "Practice" else
-                 f"🎤 {s}" if s == "Mock Interview" else
-                 f" MCQ {s}" if s == "MCQ Quiz" else
-                 f"💻 {s}" if s == "Code Runner" else
-                 f"📝 {s}" if s == "Pseudocode" else
-                 f"📌 {s}" for s in all_sections]
+    
+    # Create descriptive tab names
+    tab_name_map = {
+        "Practice": "🧠 Practice",
+        "Mock Interview": "🎤 Mock Interview",
+        "MCQ Quiz": "📊 MCQ Quiz",
+        "Code Runner": "💻 Code Runner",
+        "Pseudocode": "📝 Pseudocode"
+    }
+    # Use descriptive name if in map, otherwise default
+    tab_names = [tab_name_map.get(s, f"📌 {s}") for s in all_sections]
     
     # Add permanent tabs
     tab_names.extend(["📈 Results", "📊 Performance & Analytics", "🕓 History"])
     
     section_tabs = st.tabs(tab_names)
 
-    # ---------- Section Generator (✅ Updated) ----------
+    # ---------- Section Generator (✅ This is the main fix) ----------
     def setup_test(section_name, key_prefix):
         """Creates the UI for starting a test for a given section."""
         st.markdown(f"<h3 style='color:#008080;'>{section_name}</h3>", unsafe_allow_html=True)
@@ -1375,11 +1383,13 @@ if st.session_state.mode == "main":
             st.warning(f"No questions found for section '{section_name}' in the question bank.")
             return
 
+        # THIS IS THE CRITICAL LOGIC:
         # Check if the first level keys are difficulties, meaning no topics
         has_topics = not ("Easy" in section_data or "Medium" in section_data or "Hard" in section_data)
         
         topic = None
         if has_topics:
+            # This section (e.g., Practice) has topics
             topics_for_section = list(section_data.keys())
             if not topics_for_section:
                 st.error(f"No topics found for section: {section_name}")
@@ -1389,6 +1399,7 @@ if st.session_state.mode == "main":
             # This section (e.g., Code Runner) doesn't have topics
             pass 
 
+        # This part is now safe, it runs for both structures
         diff = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"], key=f"{key_prefix}_diff")
         count = st.slider("Number of Questions", 1, 15, 5, key=f"{key_prefix}_count")
         start_btn = st.button("▶ Start Test", key=f"{key_prefix}_start")
@@ -1416,6 +1427,7 @@ if st.session_state.mode == "main":
     # ---------- Dynamically Create Tabs for Sections ----------
     for i, section_name in enumerate(all_sections):
         with section_tabs[i]:
+            # Use a unique key_prefix for each section
             setup_test(section_name, section_name.lower().replace(" ", "_"))
 
     # ---------- Results ----------
@@ -1427,8 +1439,15 @@ if st.session_state.mode == "main":
         else:
             df = pd.DataFrame(h)
             df_display = df[["section", "timestamp", "score"]].copy()
-            # Handle N/A scores for display
-            df_display['score'] = df_display['score'].apply(lambda x: "N/A (Review)" if x == 0 and any(d['score'] == 'N/A' for rec in h for d in rec['details']) else x)
+            
+            # Function to determine if a result was N/A
+            def check_na(row):
+                rec = h[row.name] # Get original record by index
+                if any(d.get('score') == 'N/A' for d in rec.get('details', [])):
+                    return "N/A (Review)"
+                return row['score']
+
+            df_display['score'] = df.apply(check_na, axis=1)
             st.dataframe(df_display, use_container_width=True)
 
     # ---------- Performance & Analytics ----------
@@ -1445,7 +1464,13 @@ if st.session_state.mode == "main":
                 df_numeric['score'] = df_numeric['score'].astype(float)
                 
                 # Exclude sections that are always 0 (N/A) from graphs
-                df_plottable = df_numeric[df_numeric['score'] > 0]
+                # N/A sections have score=0 AND details[0]['score'] == 'N/A'
+                na_sections = set()
+                for rec in h:
+                    if rec.get('score') == 0 and rec.get('details') and rec['details'][0].get('score') == 'N/A':
+                        na_sections.add(rec['section'])
+                
+                df_plottable = df_numeric[~df_numeric['section'].isin(na_sections)]
 
                 if not df_plottable.empty:
                     fig = px.bar(df_plottable, x="section", y="score", color="section", title="Score per Section (Graded Tests)", text_auto=True)
@@ -1455,7 +1480,7 @@ if st.session_state.mode == "main":
                     fig2 = px.pie(avg_scores, names="section", values="score", title="Average Score Distribution (Graded Tests)")
                     st.plotly_chart(fig2, use_container_width=True)
                 else:
-                    st.info("No auto-graded test data available to plot.")
+                    st.info("No auto-graded test data available to plot. (Mock Interviews and Code Runner are not auto-graded).")
 
     # ---------- History ----------
     with section_tabs[-1]: # Corresponds to "History"
@@ -1464,8 +1489,12 @@ if st.session_state.mode == "main":
         if not h:
             st.info("No history found.")
         else:
-            for rec in h[::-1]:
-                st.markdown(f"**Section:** {rec['section']} | **Timestamp:** {rec['timestamp']} | **Score:** {rec.get('score', 'N/A')}")
+            for rec in h[::-1]: # Show newest first
+                score_display = rec.get('score', 'N/A')
+                if any(d.get('score') == 'N/A' for d in rec.get('details', [])):
+                    score_display = "N/A (Review)"
+
+                st.markdown(f"**Section:** {rec['section']} | **Timestamp:** {rec['timestamp']} | **Score:** {score_display}")
                 with st.expander("View Details", expanded=False):
                     for d in rec.get("details", []):
                         st.markdown(f"**Q:** {d['q']}")
@@ -1520,7 +1549,7 @@ elif st.session_state.mode == "exam":
             # Sections with multiple-choice answers (MCQ, Pseudocode)
             elif ex["section"] in ["MCQ Quiz", "Pseudocode"]:
                 for a, q in zip(ex["answers"], ex["qs"]):
-                    s = 1 if a == q["a"] else 0
+                    s = 1 if str(a).strip() == str(q["a"]).strip() else 0 # Compare as strings
                     scores.append(s)
                     details.append({"q": q["q"], "selected": a, "correct": q["a"], "score": s})
                 # Score is total correct answers
@@ -1544,7 +1573,7 @@ elif st.session_state.mode == "exam":
             st.warning("⏰ Time over! Auto-submitting...")
             time.sleep(2) # Give user time to see message
             calculate_and_save_results()
-            st.experimental_rerun()
+            st.experimental_rerun() # Ensure it reruns to go to main page
 
         # Submit button
         col1, col2 = st.columns([8, 1])
@@ -1563,14 +1592,18 @@ elif st.session_state.mode == "exam":
         # Answer Input
         if ex["section"] in ["MCQ Quiz", "Pseudocode"]:
             options = q.get("options", [])
-            # Use index to handle non-string options if any, default to stored answer
             current_answer = ex["answers"][idx]
+            
+            # Normalize options and answer for comparison
+            normalized_options = [str(opt).strip() for opt in options]
+            normalized_answer = str(current_answer).strip()
+
             try:
-                # Handle potential formatting differences (e.g., newlines in pseudocode)
-                normalized_options = [str(opt).strip() for opt in options]
-                default_index = normalized_options.index(str(current_answer).strip())
+                default_index = normalized_options.index(normalized_answer)
             except ValueError:
                 default_index = 0 # Default to first option if answer not set
+                if current_answer == "": # Set initial answer to first option
+                    ex["answers"][idx] = options[0] if options else ""
                 
             selected = st.radio("Select Option:", options, index=default_index, key=f"ans{idx}")
             ex["answers"][idx] = selected
@@ -1604,8 +1637,9 @@ elif st.session_state.mode == "exam":
         st.caption(f"Question {idx+1}/{len(ex['qs'])}")
 
         # Rerun to update timer
-        time.sleep(1)
-        st.experimental_rerun()
+        if remaining > 0:
+            time.sleep(1)
+            st.experimental_rerun()
 
 # -------------------------------
 # Footer
