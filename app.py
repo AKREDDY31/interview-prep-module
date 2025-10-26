@@ -38,7 +38,7 @@ if "badges" not in st.session_state: st.session_state.badges = []
 if "consecutive_correct" not in st.session_state: st.session_state.consecutive_correct = 0
 
 # ------------------ Question Bank ------------------
-DEFAULT_BANK = {
+QUESTION_BANK= {
     "Practice": {  # Aptitude Questions
         "Easy": [
             {"q": "If 5x + 3 = 18, what is x?", "a": "3", "options": ["2","3","4","5"]},
@@ -354,3 +354,4 @@ if st.session_state.in_test:
 
 # ------------------ Footer ------------------
 st.markdown('<div class="footer">Developed by Anil & Team</div>', unsafe_allow_html=True)
+
